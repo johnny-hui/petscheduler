@@ -39,12 +39,12 @@ public final class UserRegistrationUtil
                                        final UserRole role,
                                        final RegisterUserDTO request)
     {
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
         user.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPostalCode(request.getPostalCode());
-        user.setAvatarURL(request.getAvatarURL());
+        user.setPostalCode(request.getPostalCode().trim().toUpperCase(Locale.ROOT));
+        user.setAvatarURL(request.getAvatarURL() != null ? request.getAvatarURL().trim() : null);
         user.setRole(role);
     }
 
@@ -89,13 +89,13 @@ public final class UserRegistrationUtil
      */
      public static void setPetBusinessInfo(PetBusiness user, final RegisterPetBusinessDTO request)
      {
-        user.setBusinessName(request.getBusinessName());
-        user.setAddress(request.getAddress());
-        user.setCity(request.getCity());
+        user.setBusinessName(request.getBusinessName().trim());
+        user.setAddress(request.getAddress().trim());
+        user.setCity(request.getCity().trim());
         user.setEstablishmentYear(request.getEstablishmentYear());
         user.setProfileTitle(request.getProfileTitle());
         user.setProfileDescription(request.getProfileDescription());
-        user.setWebsiteURL(request.getWebsiteURL());
-        user.setPhoneNumber(request.getPhoneNumber());
+        user.setWebsiteURL(request.getWebsiteURL() != null ? request.getWebsiteURL().trim() : null);
+        user.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
      }
 }
