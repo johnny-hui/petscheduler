@@ -4,10 +4,10 @@ import com.johnny.petscheduler.DTO.user.UpdatePetBusinessDTO;
 import com.johnny.petscheduler.DTO.user.UpdatePetOwnerDTO;
 import com.johnny.petscheduler.DTO.user.UpdatePetSitterDTO;
 import com.johnny.petscheduler.DTO.user.UpdateUserDTO;
-import com.johnny.petscheduler.entities.PetBusiness;
-import com.johnny.petscheduler.entities.PetOwner;
-import com.johnny.petscheduler.entities.PetSitter;
-import com.johnny.petscheduler.entities.User;
+import com.johnny.petscheduler.entities.users.PetBusiness;
+import com.johnny.petscheduler.entities.users.PetOwner;
+import com.johnny.petscheduler.entities.users.PetSitter;
+import com.johnny.petscheduler.entities.users.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Locale;

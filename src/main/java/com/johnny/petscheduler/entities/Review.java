@@ -1,16 +1,18 @@
 package com.johnny.petscheduler.entities;
 
+import com.johnny.petscheduler.entities.users.PetOwner;
+import com.johnny.petscheduler.entities.users.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.util.Date;
 
 @Entity
-@Table(name="review")
-@Data @NoArgsConstructor
+@Table(name = "reviews")
+@Getter @Setter @NoArgsConstructor
 public class Review
 {
     public static final String MIN_RATING = "1.0";

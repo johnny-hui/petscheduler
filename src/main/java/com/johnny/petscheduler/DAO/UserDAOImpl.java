@@ -1,6 +1,6 @@
 package com.johnny.petscheduler.DAO;
 
-import com.johnny.petscheduler.entities.User;
+import com.johnny.petscheduler.entities.users.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;

@@ -5,9 +5,9 @@ import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetSitterDTO;
 import com.johnny.petscheduler.DTO.user.UserResponseDTO;
-import com.johnny.petscheduler.entities.PetBusiness;
-import com.johnny.petscheduler.entities.PetOwner;
-import com.johnny.petscheduler.entities.PetSitter;
+import com.johnny.petscheduler.entities.users.PetBusiness;
+import com.johnny.petscheduler.entities.users.PetOwner;
+import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
 import com.johnny.petscheduler.exceptions.EstablishmentYearInvalidException;
 import com.johnny.petscheduler.security.user.UserRole;
@@ -43,6 +43,7 @@ public class AuthenticationService {
         if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
+
         PetOwner user = new PetOwner();
         UserRegistrationUtil.setBaseUserInfo(user, passwordEncoder, UserRole.PET_OWNER, request);
         UserRegistrationUtil.setPetOwnerInfo(user, request);
@@ -79,11 +80,7 @@ public class AuthenticationService {
         UserRegistrationUtil.setPetBusinessInfo(user, request);
         userDAO.createUser(user);
 
-        return new UserResponseDTO(
-                request.getFirstName(),
-                request.getLastName(),
-                request.getEmail()
-        );
+        return new UserResponseDTO(request.getFirstName(), request.getLastName(), request.getEmail());
     }
 
     // Login

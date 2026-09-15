@@ -4,10 +4,10 @@ import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetSitterDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterUserDTO;
-import com.johnny.petscheduler.entities.PetBusiness;
-import com.johnny.petscheduler.entities.PetOwner;
-import com.johnny.petscheduler.entities.PetSitter;
-import com.johnny.petscheduler.entities.User;
+import com.johnny.petscheduler.entities.users.PetBusiness;
+import com.johnny.petscheduler.entities.users.PetOwner;
+import com.johnny.petscheduler.entities.users.PetSitter;
+import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.security.user.UserRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

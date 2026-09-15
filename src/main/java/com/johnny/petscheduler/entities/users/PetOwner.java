@@ -1,5 +1,8 @@
-package com.johnny.petscheduler.entities;
+package com.johnny.petscheduler.entities.users;
 
+import com.johnny.petscheduler.entities.Review;
+import com.johnny.petscheduler.entities.pet.Pet;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -9,24 +12,22 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Getter @Setter @NoArgsConstructor
-public class PetSitter extends User
+public class PetOwner extends User
 {
-    @Column(name = "year_of_exp", nullable = false)
-    private Integer yearsOfExperience;
+    @Column(name = "bio")
+    private String bio;
 
-    @Column(name = "profile_title")
-    private String profileTitle;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pet> pets = new ArrayList<>();
 
-    @Column(name = "profile_desc")
-    private String profileDescription;
-
-    @OneToMany(mappedBy = "reviewedUser")
-    private List<Review> reviewsReceived;
+    @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
+    private List<Review> reviewsWritten = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
