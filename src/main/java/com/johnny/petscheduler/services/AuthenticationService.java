@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMAIL_ALREADY_EXISTS;
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_INVALID_EST_YEAR;
 
@@ -38,7 +40,7 @@ public class AuthenticationService {
 
     @Transactional
     public UserResponseDTO registerPetOwner(final RegisterPetOwnerDTO request) {
-        if(userDAO.doesUserExist(request.getEmail())) {
+        if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
         PetOwner user = new PetOwner();
@@ -51,7 +53,7 @@ public class AuthenticationService {
 
     @Transactional
     public UserResponseDTO registerPetSitter(final RegisterPetSitterDTO request) {
-        if(userDAO.doesUserExist(request.getEmail())) {
+        if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
 
@@ -68,7 +70,7 @@ public class AuthenticationService {
         if(!ValidationUtil.isYearEstablishedValid(request.getEstablishmentYear())) {
             throw new EstablishmentYearInvalidException(ERROR_MESSAGE_INVALID_EST_YEAR);
         }
-        if(userDAO.doesUserExist(request.getEmail())) {
+        if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
 

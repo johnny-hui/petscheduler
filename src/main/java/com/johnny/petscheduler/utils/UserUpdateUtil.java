@@ -10,6 +10,8 @@ import com.johnny.petscheduler.entities.PetSitter;
 import com.johnny.petscheduler.entities.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Locale;
+
 /**
  * Contains utility functions to facilitate updating Users.
  */
@@ -32,16 +34,16 @@ public class UserUpdateUtil
                                           final UpdateUserDTO request)
     {
         if(request.getEmail() != null) {
-            user.setEmail(request.getEmail());
+            user.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
         }
         if(request.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
         if(request.getPostalCode() != null) {
-            user.setPostalCode(request.getPostalCode());
+            user.setPostalCode(request.getPostalCode().trim().toUpperCase(Locale.ROOT));
         }
         if(request.getAvatarURL() != null) {
-            user.setAvatarURL(request.getAvatarURL());
+            user.setAvatarURL(request.getAvatarURL().trim());
         }
     }
 
@@ -57,7 +59,7 @@ public class UserUpdateUtil
     public static void updatePetOwnerInfo(PetOwner user, final UpdatePetOwnerDTO request)
     {
         if(request.getBio() != null) {
-            user.setBio(request.getBio());
+            user.setBio(request.getBio().trim());
         }
     }
 
@@ -73,10 +75,10 @@ public class UserUpdateUtil
     public static void updatePetSitterInfo(PetSitter user, final UpdatePetSitterDTO request)
     {
         if(request.getProfileTitle() != null) {
-            user.setProfileTitle(request.getProfileTitle());
+            user.setProfileTitle(request.getProfileTitle().trim());
         }
         if(request.getProfileDescription() != null) {
-            user.setProfileDescription(request.getProfileDescription());
+            user.setProfileDescription(request.getProfileDescription().trim());
         }
     }
 
@@ -92,22 +94,22 @@ public class UserUpdateUtil
     public static void updatePetBusinessInfo(PetBusiness user, final UpdatePetBusinessDTO request)
     {
         if(request.getAddress() != null) {
-            user.setAddress(request.getAddress());
+            user.setAddress(request.getAddress().trim());
         }
         if(request.getCity() != null) {
-            user.setCity(request.getCity());
+            user.setCity(request.getCity().trim());
         }
         if(request.getProfileTitle() != null) {
-            user.setProfileTitle(request.getProfileTitle());
+            user.setProfileTitle(request.getProfileTitle().trim());
         }
         if(request.getProfileDescription() != null) {
-            user.setProfileDescription(request.getProfileDescription());
+            user.setProfileDescription(request.getProfileDescription().trim());
         }
         if(request.getWebsiteURL() != null) {
-            user.setWebsiteURL(request.getWebsiteURL());
+            user.setWebsiteURL(request.getWebsiteURL().trim());
         }
         if(request.getPhoneNumber() != null) {
-            user.setPhoneNumber(request.getPhoneNumber());
+            user.setPhoneNumber(request.getPhoneNumber().trim());
         }
     }
 }

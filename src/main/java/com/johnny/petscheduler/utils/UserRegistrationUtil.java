@@ -59,7 +59,7 @@ public final class UserRegistrationUtil
      */
      public static void setPetOwnerInfo(PetOwner user, final RegisterPetOwnerDTO request)
      {
-         user.setBio(request.getBio());
+         user.setBio(request.getBio() != null ? request.getBio().trim() : null);
      }
 
     /**
@@ -73,8 +73,8 @@ public final class UserRegistrationUtil
      */
      public static void setPetSitterInfo(PetSitter user, final RegisterPetSitterDTO request)
      {
-         user.setProfileTitle(request.getProfileTitle());
-         user.setProfileDescription(request.getProfileDescription());
+         user.setProfileTitle(request.getProfileTitle() != null ? request.getProfileTitle().trim() : null);
+         user.setProfileDescription(request.getProfileDescription() != null ? request.getProfileDescription().trim() : null);
          user.setYearsOfExperience(request.getYearsOfExperience());
      }
 
@@ -93,8 +93,8 @@ public final class UserRegistrationUtil
         user.setAddress(request.getAddress().trim());
         user.setCity(request.getCity().trim());
         user.setEstablishmentYear(request.getEstablishmentYear());
-        user.setProfileTitle(request.getProfileTitle());
-        user.setProfileDescription(request.getProfileDescription());
+        user.setProfileTitle(request.getProfileTitle() != null ? request.getProfileTitle().trim() : null);
+        user.setProfileDescription(request.getProfileDescription() != null ? request.getProfileDescription().trim() : null);
         user.setWebsiteURL(request.getWebsiteURL() != null ? request.getWebsiteURL().trim() : null);
         user.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
      }
