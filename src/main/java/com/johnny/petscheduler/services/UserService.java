@@ -9,6 +9,7 @@ import com.johnny.petscheduler.entities.PetBusiness;
 import com.johnny.petscheduler.entities.PetOwner;
 import com.johnny.petscheduler.entities.PetSitter;
 import com.johnny.petscheduler.entities.User;
+import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
 import com.johnny.petscheduler.exceptions.UserNotFoundException;
 import com.johnny.petscheduler.utils.UserUpdateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+
+import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMAIL_ALREADY_EXISTS;
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_USER_NOT_FOUND;
 
 @Service
@@ -41,8 +45,8 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Void> updatePetOwner(final Long id, final UpdatePetOwnerDTO request) {
-        if(userDAO.doesUserExist(id)) {
-            throw new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND);
+        if(request.getEmail() != null && userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
+            throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
 
         User user = userDAO.getUserById(id);
@@ -55,8 +59,8 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Void> updatePetSitter(final Long id, final UpdatePetSitterDTO request) {
-        if(userDAO.doesUserExist(id)) {
-            throw new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND);
+        if(request.getEmail() != null && userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
+            throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
 
         User user = userDAO.getUserById(id);
@@ -70,8 +74,8 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Void> updatePetBusiness(final Long id, final UpdatePetBusinessDTO request) {
-        if(userDAO.doesUserExist(id)) {
-            throw new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND);
+        if(request.getEmail() != null && userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
+            throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
 
         User user = userDAO.getUserById(id);
@@ -85,7 +89,7 @@ public class UserService {
 
     @Transactional
     public ResponseEntity<Void> deleteUser(final Long id) {
-        if(userDAO.doesUserExist(id)) {
+        if(!userDAO.doesUserExist(id)) {
             throw new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND);
         }
 
