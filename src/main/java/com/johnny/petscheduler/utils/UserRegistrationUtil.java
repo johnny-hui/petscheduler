@@ -11,6 +11,8 @@ import com.johnny.petscheduler.entities.User;
 import com.johnny.petscheduler.security.user.UserRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Locale;
+
 /**
  * A utility class that provides methods to facilitate User registration.
  */
@@ -39,7 +41,7 @@ public final class UserRegistrationUtil
     {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
+        user.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPostalCode(request.getPostalCode());
         user.setAvatarURL(request.getAvatarURL());
