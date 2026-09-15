@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.entities;
+package com.johnny.petscheduler.entities.users;
 
 import com.johnny.petscheduler.security.user.UserRole;
 import jakarta.persistence.*;
@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @Getter @Setter @NoArgsConstructor
 public abstract class User implements UserDetails
 {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "first_name", nullable = false)

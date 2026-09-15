@@ -1,7 +1,7 @@
 package com.johnny.petscheduler.security.user;
 
 import com.johnny.petscheduler.DAO.UserDAO;
-import com.johnny.petscheduler.entities.User;
+import com.johnny.petscheduler.entities.users.User;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
