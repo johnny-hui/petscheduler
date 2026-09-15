@@ -1,0 +1,13 @@
+{
+  // Base User Info
+  "firstName": "Johnny",
+  "lastName": "Hui",
+  "email": "Johnny_lim@dlas.com",
+  "password": "Water123-!",
+  "postalCode": "V5N 4J1",
+
+  // Pet-sitter related attributes
+  "yearsOfExperience": 3,
+  "profileTitle": "I am a dog lover and have 3 years of experience dog-sitting.",
+  "profileDescription": "I love dogs very much and I look forward to meeting you!"
+}
