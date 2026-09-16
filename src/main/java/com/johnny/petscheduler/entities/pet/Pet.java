@@ -23,7 +23,6 @@ import java.util.List;
 @Getter @Setter @NoArgsConstructor
 public final class Pet
 {
-    // TODO: Enforce an upper limit to the amount of Pets a user can have (max. 10)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -51,7 +51,7 @@ public record PetUpdateDTO (
 
         @Nullable
         @Valid
-        PetDetailsDTO details,
+        PetDetailsUpdateDTO details,
 
         @Nullable
         @Size(max = 5, message = "A pet cannot have more than 5 traits")

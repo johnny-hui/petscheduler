@@ -2,6 +2,7 @@ package com.johnny.petscheduler.exceptions.handlers;
 
 import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
 import com.johnny.petscheduler.exceptions.EstablishmentYearInvalidException;
+import com.johnny.petscheduler.exceptions.PetLimitExceededException;
 import com.johnny.petscheduler.exceptions.UserNotFoundException;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
@@ -32,6 +33,20 @@ import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
+    @ExceptionHandler(PetLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(final PetLimitExceededException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ErrorCode.PET_COUNT_EXCEEDED,
+                ERROR_TITLE_PET_COUNT_EXCEEDED,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(final EmailAlreadyExistsException ex)
     {

@@ -39,6 +39,23 @@ public class PetDAOImpl implements PetDAO
                 .getResultList();
     }
 
+    /**
+     * Returns the number of Pets owned by a specific user.
+     *
+     * @param userID
+     *      A Long representing the user ID
+     *
+     * @return long
+     *      The number of pets
+     */
+    @Override
+    public long countPetsByUser(final long userID) {
+        return em
+                .createQuery("SELECT COUNT(p) FROM Pet p WHERE p.owner.id = :userID", Long.class)
+                .setParameter("userID", userID)
+                .getSingleResult();
+    }
+
     @Override
     public void updatePet(final Pet pet) {
         em.merge(pet);

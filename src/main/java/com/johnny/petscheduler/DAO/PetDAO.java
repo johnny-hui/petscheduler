@@ -13,6 +13,7 @@ public interface PetDAO
     // Read
     Optional<Pet> getPetById(final int petId);
     List<Pet> getAllPetsFromUser(final String email);
+    long countPetsByUser(final long userID);
 
     // Update
     void updatePet(final Pet pet);
