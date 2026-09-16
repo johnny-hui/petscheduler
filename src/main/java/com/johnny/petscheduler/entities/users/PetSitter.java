@@ -29,7 +29,7 @@ public class PetSitter extends User
     @Column(name = "profile_desc")
     private String profileDescription;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pet> pets = new ArrayList<>();
 
     @OneToMany(mappedBy = "reviewedUser")

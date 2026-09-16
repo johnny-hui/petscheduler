@@ -9,8 +9,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
-import java.time.Year;
-
 @Getter
 @Setter
 @NoArgsConstructor

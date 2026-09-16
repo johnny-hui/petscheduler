@@ -12,6 +12,7 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_BAD_CREDENTIALS = "Bad Credentials";
     public static final String ERROR_TITLE_BAD_ACCOUNT_STATUS = "Bad Account Status";
     public static final String ERROR_TITLE_ACCESS_DENIED = "Access Denied";
+    public static final String ERROR_TITLE_INVALID_ENUM_VALUE = "Invalid Enum Value";
 
     public static final String ERROR_MESSAGE_BAD_VALIDATION = "One or more fields provided has failed validation.";
     public static final String ERROR_MESSAGE_USER_NOT_FOUND = "User with the provided email does not exist!";

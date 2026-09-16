@@ -9,12 +9,14 @@ import com.johnny.petscheduler.utils.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Instant;
 
@@ -84,6 +86,26 @@ public class GlobalExceptionHandler
                 Instant.now()
         );
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleJacksonInvalidEnum(final HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+
+        if(cause instanceof InvalidFormatException invalidFormatException
+                && invalidFormatException.getTargetType().isEnum())
+        {
+            ErrorResponse body = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    ErrorCode.INVALID_ENUM_VALUE,
+                    ERROR_TITLE_INVALID_ENUM_VALUE,
+                    ValidationUtil.parseJacksonInvalidEnumErrors(invalidFormatException),
+                    null,
+                    Instant.now()
+            );
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**

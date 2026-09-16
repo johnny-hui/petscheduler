@@ -29,52 +29,23 @@ public final class Pet
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
-    @Column(name = "name", nullable = false)
-    @Size(max = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "breed")
+    @Column(name = "breed", length = 100)
     private String breed;
-
-    @Column(name = "is_vaccinated")
-    private boolean isVaccinated;
-
-    @Column(name = "has_bite_history")
-    private boolean hasBiteHistory;
-
-    @Column(name = "can_be_left_alone")
-    private boolean canBeLeftAlone;
-
-    @Column(name = "profile_desc")
-    private String profileDescription;
-
-    @Column(name = "extra_notes")
-    private String extraNotes;
 
     @Column(name = "avatar_url")
     private String avatarURL;
 
-    @Column(name = "type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PetType type;
-
-    @Column(name = "size", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PetSize size;
-
-    @Column(name = "gender", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PetGender gender;
-
-    @Column(name = "energy_level", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EnergyLevel energyLevel;
+    @Embedded
+    private PetDetails details;
 
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PetTraitAssignment> traits = new ArrayList<>();

@@ -1,10 +1,13 @@
 package com.johnny.petscheduler.utils;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Year;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A utility class that provides methods for validating various data.
@@ -54,5 +57,36 @@ public class ValidationUtil
                 );
 
         return errors;
+    }
+
+    /**
+     * Parses for any errors and the fields affected from Jackson binding when
+     * invalid enums are provided in a client DTO object.
+     *
+     * @param ex
+     *      An InvalidFormatException object
+     *
+     * @return message
+     *      The parsed error with fields
+     */
+    public static String parseJacksonInvalidEnumErrors(final InvalidFormatException ex) {
+        String invalidValue = String.valueOf(ex.getValue());
+
+        String fieldName = ex.getPath().isEmpty()
+                ? "field"
+                : ex.getPath()
+                    .getLast()
+                    .getPropertyName();
+
+        String allowedValues = Arrays.stream(ex.getTargetType().getEnumConstants())
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+
+        return String.format(
+                "Invalid value '%s' for field '%s'. Allowed values: %s",
+                invalidValue,
+                fieldName,
+                allowedValues
+        );
     }
 }
