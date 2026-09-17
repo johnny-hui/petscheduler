@@ -3,8 +3,7 @@ package com.johnny.petscheduler.DTO.pet;
 import java.time.LocalDate;
 
 /**
- * This record contains base information for a Pet whenever a user request to view
- * it for a specific pet.
+ * This record contains base (limited) information for a Pet.
  *
  * @param id
  *      A Long for the id

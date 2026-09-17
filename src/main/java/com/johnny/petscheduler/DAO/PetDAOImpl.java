@@ -2,6 +2,7 @@ package com.johnny.petscheduler.DAO;
 
 import com.johnny.petscheduler.entities.pet.Pet;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,8 +24,38 @@ public class PetDAOImpl implements PetDAO
         em.persist(pet);
     }
 
+    /**
+     * Returns a Pet owned by an owner, null if none found or pet doesn't
+     * belong to owner.
+     *
+     * @param petID
+     *      A Long for the pet ID
+     *
+     * @param ownerID
+     *      A Long for the owner ID
+     *
+     * @return Pet or null
+     */
     @Override
-    public Optional<Pet> getPetById(final int petId) {
+    public Optional<Pet> getPetByIDAndOwnerID(final long petID, final long ownerID) {
+        TypedQuery<Pet> query = em.createQuery(
+                "SELECT p FROM Pet p WHERE p.id = :petID AND p.owner.id = :ownerID ", Pet.class
+        );
+        query.setParameter("petID", petID);
+        query.setParameter("ownerID", ownerID);
+        return query.getResultStream().findFirst();
+    }
+
+    /**
+     * Returns a Pet from the database according to a pet ID (no auth).
+     *
+     * @param petId
+     *      A Long for the pet ID
+     *
+     * @return Pet or null
+     */
+    @Override
+    public Optional<Pet> getPetById(final long petId) {
         return em.createQuery("SELECT p FROM Pet p WHERE p.id = :petId", Pet.class)
                 .setParameter("petId", petId)
                 .getResultList()
@@ -32,10 +63,19 @@ public class PetDAOImpl implements PetDAO
                 .findFirst();
     }
 
+    /**
+     * Get all Pets for a specific owner.
+     *
+     * @param ownerID
+     *      A Long for the user ID
+     *
+     * @return A List of Pets
+     */
     @Override
-    public List<Pet> getAllPetsFromUser(final String email) {
-        return em.createQuery("SELECT p FROM Pet p WHERE p.owner.email = :email ", Pet.class)
-                .setParameter("email", email)
+    public List<Pet> getAllPetsFromUser(final long ownerID) {
+        return em
+                .createQuery("SELECT p FROM Pet p WHERE p.owner.id = :ownerID ", Pet.class)
+                .setParameter("ownerID", ownerID)
                 .getResultList();
     }
 
@@ -49,7 +89,7 @@ public class PetDAOImpl implements PetDAO
      *      The number of pets
      */
     @Override
-    public long countPetsByUser(final long userID) {
+    public long countPetsOwnedByUser(final long userID) {
         return em
                 .createQuery("SELECT COUNT(p) FROM Pet p WHERE p.owner.id = :userID", Long.class)
                 .setParameter("userID", userID)

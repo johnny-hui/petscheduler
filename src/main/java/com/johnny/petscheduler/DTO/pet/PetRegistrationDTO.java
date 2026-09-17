@@ -49,9 +49,9 @@ public record PetRegistrationDTO(
         String avatarURL,
 
         @Valid  // => tells Spring to validate this DTO class too
-        PetDetailsDTO petDetails,
+        PetDetailsDTO details,
 
         @NotEmpty(message = "Pet traits are required")
         @Size(max = 5, message = "A pet cannot have more than 5 traits")
-        Set<PetTrait> petTraits
+        Set<PetTrait> traits
 ) {}

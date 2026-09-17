@@ -1,6 +1,7 @@
 package com.johnny.petscheduler.controllers;
 
 import com.johnny.petscheduler.DTO.pet.PetBaseResponseDTO;
+import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
 import com.johnny.petscheduler.services.PetService;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,27 +27,30 @@ public class PetController
 
     // Create
     @PostMapping
-    public ResponseEntity<PetBaseResponseDTO> createPet(@Valid @RequestBody PetRegistrationDTO request,
+    public ResponseEntity<Void> createPet(@Valid @RequestBody PetRegistrationDTO request,
                                                         final Authentication authentication)
     {
         return petService.createPet(request, authentication);
     }
 
     // Read
+    @GetMapping("/{petID}")
+    public ResponseEntity<PetFullResponseDTO> getPet(@PathVariable final int petID,
+                                                     final Authentication authentication)
+    {
+        PetFullResponseDTO response = petService.getPet(petID, authentication);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
     @GetMapping
     public ResponseEntity<List<PetBaseResponseDTO>> getAllPets(final Authentication authentication)
     {
+        List<PetBaseResponseDTO> response = petService.getAllPetsFromUser(authentication);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ArrayList<>());
-    }
-
-    @GetMapping("/{petID}")
-    public ResponseEntity<PetBaseResponseDTO> getPet(@PathVariable final int petID,
-                                                     final Authentication authentication)
-    {
-        PetBaseResponseDTO response = petService.getPet(petID, authentication);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+                .body(response);
     }
 
     // Update

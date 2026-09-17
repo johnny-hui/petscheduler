@@ -1,5 +1,6 @@
 package com.johnny.petscheduler.utils;
 
+import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.entities.pet.Pet;
 import com.johnny.petscheduler.entities.pet.PetDetails;
@@ -8,7 +9,9 @@ import com.johnny.petscheduler.entities.pet.PetTraitAssignment;
 import com.johnny.petscheduler.entities.users.User;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A utility class that contains methods that facilitate various Pet CRUD operations.
@@ -44,7 +47,31 @@ public class PetUtil
         pet.setTraits(parsePetTraits(pet, request));
     }
 
-    // TODO: Create a method that checks if pet is actually owned by the user before updating
+    /**
+     * Parses Pet information and returns a PetFullResponseDTO.
+     *
+     * @param pet
+     *      A Pet object
+     *
+     * @return PetFullResponseDTO
+     *      A PetFullResponseDTO object
+     */
+    public static PetFullResponseDTO getPetFullInfo(final Pet pet)
+    {
+        Set<PetTrait> traits = new HashSet<>();
+        for(final PetTraitAssignment petTrait : pet.getTraits()) {
+            traits.add(petTrait.getTrait());
+        }
+        return new PetFullResponseDTO(
+                pet.getId(),
+                pet.getName(),
+                pet.getBreed(),
+                pet.getDateOfBirth(),
+                pet.getAvatarURL(),
+                pet.getDetails(),
+                traits
+        );
+    }
 
     private static void setBasePetInfo(Pet pet,
                                        final User owner,
@@ -68,26 +95,26 @@ public class PetUtil
         PetDetails petDetails = new PetDetails();
 
         // Set Non-nullable fields
-        petDetails.setType(request.petDetails().type());
-        petDetails.setSize(request.petDetails().size());
-        petDetails.setGender(request.petDetails().gender());
-        petDetails.setEnergyLevel(request.petDetails().energyLevel());
+        petDetails.setType(request.details().type());
+        petDetails.setSize(request.details().size());
+        petDetails.setGender(request.details().gender());
+        petDetails.setEnergyLevel(request.details().energyLevel());
 
         // Set nullable fields
-        if(request.petDetails().isVaccinated() != null) {
-            petDetails.setIsVaccinated(request.petDetails().isVaccinated());
+        if(request.details().isVaccinated() != null) {
+            petDetails.setIsVaccinated(request.details().isVaccinated());
         }
-        if(request.petDetails().hasBiteHistory() != null) {
-            petDetails.setHasBiteHistory(request.petDetails().hasBiteHistory());
+        if(request.details().hasBiteHistory() != null) {
+            petDetails.setHasBiteHistory(request.details().hasBiteHistory());
         }
-        if(request.petDetails().canBeLeftAlone() != null) {
-            petDetails.setCanBeLeftAlone(request.petDetails().canBeLeftAlone());
+        if(request.details().canBeLeftAlone() != null) {
+            petDetails.setCanBeLeftAlone(request.details().canBeLeftAlone());
         }
-        if(request.petDetails().profileDescription() != null) {
-            petDetails.setProfileDescription(request.petDetails().profileDescription());
+        if(request.details().profileDescription() != null) {
+            petDetails.setProfileDescription(request.details().profileDescription());
         }
-        if(request.petDetails().extraNotes() != null) {
-            petDetails.setExtraNotes(request.petDetails().extraNotes());
+        if(request.details().extraNotes() != null) {
+            petDetails.setExtraNotes(request.details().extraNotes());
         }
 
         return petDetails;
@@ -97,7 +124,7 @@ public class PetUtil
                                                            final PetRegistrationDTO request)
     {
         List<PetTraitAssignment> petTraits = new ArrayList<>();
-        for(final PetTrait trait : request.petTraits()) {
+        for(final PetTrait trait : request.traits()) {
             PetTraitAssignment petTraitAssignment = new PetTraitAssignment();
             petTraitAssignment.setPet(pet);
             petTraitAssignment.setTrait(trait);

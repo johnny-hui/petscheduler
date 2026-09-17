@@ -2,7 +2,6 @@ package com.johnny.petscheduler.entities.pet;
 
 import com.johnny.petscheduler.entities.users.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
