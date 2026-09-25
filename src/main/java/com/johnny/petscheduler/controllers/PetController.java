@@ -44,6 +44,15 @@ public class PetController
                 .body(response);
     }
 
+    /**
+     * Returns a list of Pets for a specific User.
+     *
+     * @param authentication
+     *      An Authentication object from Spring Security
+     *
+     * @return ResponseEntity<List<PetBaseResponseDTO>>
+     *     A List of Pets (with limited information)
+     */
     @GetMapping
     public ResponseEntity<List<PetBaseResponseDTO>> getAllPets(final Authentication authentication)
     {

@@ -25,8 +25,7 @@ public class PetDAOImpl implements PetDAO
     }
 
     /**
-     * Returns a Pet owned by an owner, null if none found or pet doesn't
-     * belong to owner.
+     * Returns a Pet owned by an owner, null if none found or pet doesn't belong to owner.
      *
      * @param petID
      *      A Long for the pet ID

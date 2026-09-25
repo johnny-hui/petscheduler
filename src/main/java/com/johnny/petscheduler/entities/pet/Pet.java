@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Pet entity.
@@ -45,6 +45,11 @@ public final class Pet
     @Embedded
     private PetDetails details;
 
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PetTraitAssignment> traits = new ArrayList<>();
+    @ElementCollection
+    @CollectionTable(
+            name = "pet_traits",
+            joinColumns = @JoinColumn(name = "pet_id")
+    )
+    @Enumerated(EnumType.STRING)
+    private Set<PetTrait> traits = new HashSet<>();
 }

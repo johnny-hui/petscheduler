@@ -14,7 +14,9 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_ACCESS_DENIED = "Access Denied";
     public static final String ERROR_TITLE_INVALID_ENUM_VALUE = "Invalid Enum Value";
     public static final String ERROR_TITLE_PET_COUNT_EXCEEDED = "Pet Count Exceeded";
-    public static final String ERROR_TITLE_PET_NOT_FOUND = "Pet Not Found";
+    public static final String ERROR_TITLE_PET_GET = "GET PET ERROR: ";
+    public static final String ERROR_TITLE_PET_UPDATE = "UPDATE PET ERROR: ";
+    public static final String ERROR_TITLE_PET_DELETE = "DELETE PET ERROR: ";
 
     public static final String ERROR_MESSAGE_BAD_VALIDATION = "One or more fields provided has failed validation.";
     public static final String ERROR_MESSAGE_USER_NOT_FOUND = "User with the provided email does not exist!";
@@ -24,5 +26,5 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_BAD_ACCOUNT_STATUS = "The account is locked, please contact admin for assistance";
     public static final String ERROR_MESSAGE_ACCESS_DENIED = "You are not authorized to access this resource";
     public static final String ERROR_MESSAGE_PET_COUNT_EXCEEDED = "You have already reached max limit of pets registered";
-    public static final String ERROR_MESSAGE_PET_NOT_FOUND = "The pet that was requested does not exist or does not belong to this user";
+    public static final String ERROR_MESSAGE_PET_FETCH = "The pet that was requested does not exist or you lack access to this resource";
 }

@@ -8,7 +8,6 @@ import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
 import com.johnny.petscheduler.entities.pet.Pet;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.exceptions.PetLimitExceededException;
-import com.johnny.petscheduler.exceptions.PetNotFoundException;
 import com.johnny.petscheduler.utils.PetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_PET_COUNT_EXCEEDED;
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_PET_NOT_FOUND;
+
+import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 
 @Service
 public class PetService
@@ -35,9 +34,9 @@ public class PetService
     // Create
     @Transactional
     public ResponseEntity<Void> createPet(final PetRegistrationDTO request,
-                                                        final Authentication authentication)
+                                          final Authentication authentication)
     {
-        // Get User object after authentication has passed
+        // Get User object after authentication has passed Spring Security Filters
         User owner = (User) authentication.getPrincipal();
 
         // Check if number of pets exceed limit (e.g. 10)
@@ -62,8 +61,11 @@ public class PetService
     {
         User owner = (User) authentication.getPrincipal();
 
-        Pet pet = petDAO.getPetByIDAndOwnerID(petID, owner.getId())
-                .orElseThrow(() -> new PetNotFoundException(ERROR_MESSAGE_PET_NOT_FOUND));
+        Pet pet = PetUtil.validateAndGetPet(
+                petDAO, petID, owner,
+                ERROR_TITLE_PET_GET,
+                ERROR_MESSAGE_PET_FETCH
+        );
 
         return PetUtil.getPetFullInfo(pet);
     }
@@ -71,18 +73,20 @@ public class PetService
     @Transactional(readOnly = true)
     public List<PetBaseResponseDTO> getAllPetsFromUser(final Authentication authentication)
     {
-        User user = (User) authentication.getPrincipal();
-        List<Pet> pets = petDAO.getAllPetsFromUser(user.getId());
+        User owner = (User) authentication.getPrincipal();
+        List<Pet> petList = petDAO.getAllPetsFromUser(owner.getId());
         List<PetBaseResponseDTO> response = new ArrayList<>();
 
-        for(final Pet pet : pets) {
-            response.add(new PetBaseResponseDTO(
-                    pet.getId(),
-                    pet.getName(),
-                    pet.getBreed(),
-                    pet.getDateOfBirth(),
-                    pet.getAvatarURL()
-            ));
+        if(!petList.isEmpty()) {
+            for(final Pet pet : petList) {
+                response.add(new PetBaseResponseDTO(
+                        pet.getId(),
+                        pet.getName(),
+                        pet.getBreed(),
+                        pet.getDateOfBirth(),
+                        pet.getAvatarURL()
+                ));
+            }
         }
         return response;
     }
@@ -93,6 +97,19 @@ public class PetService
                                           final PetUpdateDTO request,
                                           final Authentication authentication)
     {
+        // Get User details
+        User owner = (User) authentication.getPrincipal();
+
+        // Get Pet from DB and validate if pet is owned by the owner
+        Pet pet = PetUtil.validateAndGetPet(
+                petDAO, petID, owner,
+                ERROR_TITLE_PET_UPDATE,
+                ERROR_MESSAGE_PET_FETCH
+        );
+
+        // Replace any non-null values from request and add to Pet
+        PetUtil.updatePetInfo(pet, request);
+
         return ResponseEntity.ok().build();
     }
 
@@ -101,6 +118,15 @@ public class PetService
     public ResponseEntity<Void> deletePet(final int petID,
                                           final Authentication authentication)
     {
+        User owner = (User) authentication.getPrincipal();
+
+        Pet pet = PetUtil.validateAndGetPet(
+                petDAO, petID, owner,
+                ERROR_TITLE_PET_DELETE,
+                ERROR_MESSAGE_PET_FETCH
+        );
+
+        petDAO.deletePet(pet);
         return ResponseEntity.ok().build();
     }
 }

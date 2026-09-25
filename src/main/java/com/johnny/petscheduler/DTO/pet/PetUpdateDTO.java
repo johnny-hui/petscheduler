@@ -2,9 +2,11 @@ package com.johnny.petscheduler.DTO.pet;
 
 
 import com.johnny.petscheduler.entities.pet.PetTrait;
+import com.johnny.petscheduler.utils.RegexUtil;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
@@ -33,12 +35,18 @@ import java.util.Set;
  *      A set of PetTraits enum
  */
 public record PetUpdateDTO (
-        @Nullable
         @Size(max = 50, message = "Pet name must not exceed 50 characters")
+        @Pattern(
+                regexp = RegexUtil.ALPHABET_ONLY,
+                message = "Pet name must contain only alphabetic characters"
+        )
         String name,
 
-        @Nullable
         @Size(max = 100, message = "Breed must not exceed 100 characters")
+        @Pattern(
+                regexp = RegexUtil.ALPHABET_ONLY,
+                message = "Breed must contain only alphabetic characters"
+        )
         String breed,
 
         @Nullable

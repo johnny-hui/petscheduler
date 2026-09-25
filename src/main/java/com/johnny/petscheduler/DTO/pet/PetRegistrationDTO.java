@@ -1,12 +1,10 @@
 package com.johnny.petscheduler.DTO.pet;
 
 import com.johnny.petscheduler.entities.pet.PetTrait;
+import com.johnny.petscheduler.utils.RegexUtil;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
@@ -34,10 +32,17 @@ import java.util.Set;
 public record PetRegistrationDTO(
         @NotBlank(message = "Pet name is required")
         @Size(max = 50, message = "Pet name must not exceed 50 characters")
+        @Pattern(
+                regexp = RegexUtil.ALPHABET_ONLY,
+                message = "Pet name must contain only alphabetic characters"
+        )
         String name,
 
-        @Nullable
         @Size(max = 100, message = "Breed must not exceed 100 characters")
+        @Pattern(
+                regexp = RegexUtil.ALPHABET_ONLY,
+                message = "Breed must contain only alphabetic characters"
+        )
         String breed,
 
         @Nullable
@@ -51,7 +56,7 @@ public record PetRegistrationDTO(
         @Valid  // => tells Spring to validate this DTO class too
         PetDetailsDTO details,
 
-        @NotEmpty(message = "Pet traits are required")
+        @NotEmpty(message = "A few pet traits are required")
         @Size(max = 5, message = "A pet cannot have more than 5 traits")
         Set<PetTrait> traits
 ) {}
