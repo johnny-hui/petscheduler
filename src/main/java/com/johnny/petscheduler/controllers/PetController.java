@@ -76,6 +76,6 @@ public class PetController
     public ResponseEntity<Void> deletePet(@PathVariable final int petID,
                                           final Authentication authentication)
     {
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return petService.deletePet(petID, authentication);
     }
 }
