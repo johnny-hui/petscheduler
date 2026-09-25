@@ -14,6 +14,7 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_ACCESS_DENIED = "Access Denied";
     public static final String ERROR_TITLE_INVALID_ENUM_VALUE = "Invalid Enum Value";
     public static final String ERROR_TITLE_PET_COUNT_EXCEEDED = "Pet Count Exceeded";
+    public static final String ERROR_TITLE_PET_NOT_FOUND = "Pet Not Found";
     public static final String ERROR_TITLE_PET_GET = "GET PET ERROR: ";
     public static final String ERROR_TITLE_PET_UPDATE = "UPDATE PET ERROR: ";
     public static final String ERROR_TITLE_PET_DELETE = "DELETE PET ERROR: ";

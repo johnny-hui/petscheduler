@@ -1,9 +1,6 @@
 package com.johnny.petscheduler.exceptions.handlers;
 
-import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
-import com.johnny.petscheduler.exceptions.EstablishmentYearInvalidException;
-import com.johnny.petscheduler.exceptions.PetLimitExceededException;
-import com.johnny.petscheduler.exceptions.UserNotFoundException;
+import com.johnny.petscheduler.exceptions.*;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
 import com.johnny.petscheduler.utils.ValidationUtil;
@@ -34,7 +31,7 @@ import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 public class GlobalExceptionHandler
 {
     @ExceptionHandler(PetLimitExceededException.class)
-    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(final PetLimitExceededException ex)
+    public ResponseEntity<ErrorResponse> handlePetLimitExceededException(final PetLimitExceededException ex)
     {
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
@@ -45,6 +42,20 @@ public class GlobalExceptionHandler
                 Instant.now()
         );
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PetNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePetNotFoundException(final PetNotFoundException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ErrorCode.PET_NOT_FOUND,
+                ERROR_TITLE_PET_NOT_FOUND,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
