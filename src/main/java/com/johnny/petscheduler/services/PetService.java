@@ -112,7 +112,6 @@ public class PetService
         return ResponseEntity.ok().build();
     }
 
-    // Delete
     @Transactional
     public ResponseEntity<Void> deletePet(final int petID,
                                           final Authentication authentication)

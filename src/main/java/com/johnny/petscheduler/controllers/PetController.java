@@ -25,15 +25,36 @@ public class PetController
         this.petService = petService;
     }
 
-    // Create
+    /**
+     * Creates and registers a Pet for a specific User.
+     *
+     * @param request
+     *      A PetRegistrationDTO request
+     *
+     * @param authentication
+     *      An Authentication object from Spring Security
+     *
+     * @return None
+     */
     @PostMapping
     public ResponseEntity<Void> createPet(@Valid @RequestBody PetRegistrationDTO request,
-                                                        final Authentication authentication)
+                                          final Authentication authentication)
     {
         return petService.createPet(request, authentication);
     }
 
-    // Read
+    /**
+     * Returns full information for a specific Pet.
+     *
+     * @param petID
+     *      A long for the Pet ID
+     *
+     * @param authentication
+     *      An Authentication object from Spring Security
+     *
+     * @return PetFullResponseDTO
+     *      Full information about a Pet
+     */
     @GetMapping("/{petID}")
     public ResponseEntity<PetFullResponseDTO> getPet(@PathVariable final int petID,
                                                      final Authentication authentication)
@@ -62,7 +83,21 @@ public class PetController
                 .body(response);
     }
 
-    // Update
+
+    /**
+     * Updates a Pet from DB.
+     *
+     * @param petID
+     *      A Long for the Pet ID
+     *
+     * @param request
+     *      A PetUpdateDTO object
+     *
+     * @param authentication
+     *      An Authentication object from Spring Security
+     *
+     * @return None
+     */
     @PutMapping("/{petID}")
     public ResponseEntity<Void> updatePet(@PathVariable final int petID,
                                           @Valid @RequestBody final PetUpdateDTO request,
@@ -71,7 +106,17 @@ public class PetController
         return petService.updatePet(petID, request, authentication);
     }
 
-    // Delete
+    /**
+     * Deletes a Pet from DB.
+     *
+     * @param petID
+     *      A Long for the Pet ID
+     *
+     * @param authentication
+     *      An Authentication object from Spring Security
+     *
+     * @return None
+     */
     @DeleteMapping("/{petID}")
     public ResponseEntity<Void> deletePet(@PathVariable final int petID,
                                           final Authentication authentication)
