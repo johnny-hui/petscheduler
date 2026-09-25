@@ -109,7 +109,6 @@ public class PetService
 
         // Replace any non-null values from request and add to Pet
         PetUtil.updatePetInfo(pet, request);
-
         return ResponseEntity.ok().build();
     }
 

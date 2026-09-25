@@ -96,6 +96,7 @@ public class PetUtil
 
     /**
      * Validates a Pet (if exists) and returns the Pet.
+     * If not found or does not belong to owner, throw an exception.
      *
      * @param petDAO
      *      A reference to petDAO implementation object
