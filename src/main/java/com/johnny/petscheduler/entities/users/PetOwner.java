@@ -1,7 +1,6 @@
 package com.johnny.petscheduler.entities.users;
 
 import com.johnny.petscheduler.entities.Review;
-import com.johnny.petscheduler.entities.pet.Pet;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,9 +21,6 @@ public class PetOwner extends User
 {
     @Column(name = "bio")
     private String bio;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pet> pets = new ArrayList<>();
 
     @OneToMany(mappedBy = "reviewer", cascade = CascadeType.ALL)
     private List<Review> reviewsWritten = new ArrayList<>();

@@ -55,7 +55,7 @@ public class AuthenticationController
                 .body(response);
     }
 
-    // 2) Login (returns JWT access + refresh)
+    // 2) TODO: Login (returns JWT access + refresh)
     @PostMapping("/login")
     public ResponseEntity<JWTLoginResponseDTO> login(@Valid @RequestBody LoginUserDTO request) {
         return ResponseEntity.ok(new JWTLoginResponseDTO("", ""));

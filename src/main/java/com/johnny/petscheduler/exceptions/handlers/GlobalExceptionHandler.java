@@ -141,8 +141,8 @@ public class GlobalExceptionHandler
      * @see ResponseEntity
      *
      * @apiNote ResponseEntity's structure
-     *      HTTP Status ->
-     *      HTTP Headers ->
+     *      HTTP Status -> 200
+     *      HTTP Headers -> Bearer: token
      *      Body: {
      *          "json_field": 123
      *      }

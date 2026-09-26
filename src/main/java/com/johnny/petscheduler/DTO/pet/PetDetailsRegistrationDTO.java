@@ -38,7 +38,7 @@ import jakarta.validation.constraints.Size;
  * @param extraNotes
  *      A String for extra notes about the pet
  */
-public record PetDetailsDTO(
+public record PetDetailsRegistrationDTO(
         @NotNull(message = "Pet type is required")
         PetType type,
 
