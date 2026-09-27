@@ -44,6 +44,20 @@ public class GlobalExceptionHandler
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(PetBulkCreateEmptyException.class)
+    public ResponseEntity<ErrorResponse> handleEmptyBulkCreatePetException(final PetBulkCreateEmptyException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ErrorCode.PET_EMPTY_LIST,
+                ERROR_TITLE_PET_CREATE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(PetNotFoundException.class)
     public ResponseEntity<ErrorResponse> handlePetNotFoundException(final PetNotFoundException ex)
     {

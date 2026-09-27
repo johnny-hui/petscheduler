@@ -15,5 +15,6 @@ public enum ErrorCode
     ACCESS_DENIED,
     INVALID_ENUM_VALUE,
     PET_COUNT_EXCEEDED,
-    PET_NOT_FOUND
+    PET_NOT_FOUND,
+    PET_EMPTY_LIST
 }

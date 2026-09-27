@@ -33,6 +33,9 @@ public final class Pet
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
+    /**
+     * Represented in JSON equivalent: "YYYY-MM-DD" or "2000-05-15"
+     */
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 

@@ -43,6 +43,13 @@ public class PetController
         return petService.createPet(request, authentication);
     }
 
+    @PostMapping("/bulk")
+    public ResponseEntity<Void> createPets(@Valid @RequestBody List<PetRegistrationDTO> requests,
+                                           final Authentication authentication)
+    {
+        return ResponseEntity.ok().build();
+    }
+
     /**
      * Returns full information for a specific Pet.
      *

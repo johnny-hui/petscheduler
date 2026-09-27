@@ -17,6 +17,7 @@ import java.util.Set;
  *      {
  *          "name": "Buddy",
  *          "breed": "Golden Retriever",
+ *          "dateOfBirth": "YYYY-MM-DD"
  *          "details": {
  *              "color": "Golden",
  *              "weight": 30.5,
