@@ -6,6 +6,7 @@ import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
 import com.johnny.petscheduler.services.PetService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.johnny.petscheduler.services.PetService.MAX_PETS_PER_OWNER;
 
 @RestController
 @RequestMapping("/api/users/pets")
@@ -55,8 +58,11 @@ public class PetController
      * @return None (status OK)
      */
     @PostMapping("/bulk")
-    public ResponseEntity<Void> createPets(@Valid @RequestBody List<PetRegistrationDTO> requests,
-                                           final Authentication authentication)
+    public ResponseEntity<Void> createPets(
+            @RequestBody
+            @Size(min = 1, max = MAX_PETS_PER_OWNER, message = "Between 1 and 10 Pets must be provided")
+            List<@Valid PetRegistrationDTO> requests,
+            final Authentication authentication)
     {
         return petService.createPets(requests, authentication);
     }

@@ -34,28 +34,28 @@ public class GlobalExceptionHandler
     public ResponseEntity<ErrorResponse> handlePetLimitExceededException(final PetLimitExceededException ex)
     {
         ErrorResponse body = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 ErrorCode.PET_COUNT_EXCEEDED,
                 ERROR_TITLE_PET_COUNT_EXCEEDED,
                 ex.getMessage(),
                 null,
                 Instant.now()
         );
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 
     @ExceptionHandler(PetBulkCreateEmptyException.class)
     public ResponseEntity<ErrorResponse> handleEmptyBulkCreatePetException(final PetBulkCreateEmptyException ex)
     {
         ErrorResponse body = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
                 ErrorCode.PET_EMPTY_LIST,
                 ERROR_TITLE_PET_CREATE,
                 ex.getMessage(),
                 null,
                 Instant.now()
         );
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 
     @ExceptionHandler(PetNotFoundException.class)

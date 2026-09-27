@@ -101,6 +101,13 @@ public class PetControllerTest
 
     @Test
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void createPet_WhenBulkPetsAreProvided_ShouldAllowToCreateAllPets() throws Exception
+    {
+
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
     void createPet_RequestHasMissingRequiredFields_ShouldRejectInvalidRequest() throws Exception
     {
         // Arrange (should fail bean validation in controller)

@@ -7,7 +7,6 @@ import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
 import com.johnny.petscheduler.entities.pet.Pet;
 import com.johnny.petscheduler.entities.users.User;
-import com.johnny.petscheduler.exceptions.PetBulkCreateEmptyException;
 import com.johnny.petscheduler.exceptions.PetLimitExceededException;
 import com.johnny.petscheduler.utils.PetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 @Service
 public class PetService
 {
-    private static final int MAX_PETS_PER_OWNER = 10;
+    public static final int MAX_PETS_PER_OWNER = 10;
     private final PetDAO petDAO;
 
     @Autowired
@@ -62,20 +61,9 @@ public class PetService
         User owner = (User) authentication.getPrincipal();
         int listSize = requests.size();
 
-        if(listSize == 0) {
-            throw new PetBulkCreateEmptyException(ERROR_MESSAGE_PET_BULK_CREATE_EMPTY);
-        }
-
-        // Check if number of pets in the list exceeds the limit
-        if(listSize >= MAX_PETS_PER_OWNER) {
-            throw new PetLimitExceededException(
-                    ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_PROVIDED + ": " + MAX_PETS_PER_OWNER
-            );
-        }
-
         // Check if the total number of pets after addition of new pets exceeds the limit
         long petCount = petDAO.countPetsOwnedByUser(owner.getId());
-        if((petCount + listSize) >= MAX_PETS_PER_OWNER) {
+        if((petCount + listSize) > MAX_PETS_PER_OWNER) {
             throw new PetLimitExceededException(
                     ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_EXCEEDED + ": " + MAX_PETS_PER_OWNER
             );
