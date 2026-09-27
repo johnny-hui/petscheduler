@@ -6,7 +6,9 @@ import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.entities.pet.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public final class PetTestConstants
@@ -19,6 +21,29 @@ public final class PetTestConstants
     public static final PetRegistrationDTO REGISTRATION_DTO = new PetRegistrationDTO(
             "Tori",
             "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    public static final PetRegistrationDTO REGISTRATION_DTO_MISSING_FIELDS = new PetRegistrationDTO(
+            null,
+            null,
             LocalDate.parse("2000-12-09"),
             null,
             new PetDetailsRegistrationDTO(
@@ -99,4 +124,42 @@ public final class PetTestConstants
                   }
             }
             """;
+
+    /**
+     * Returns a bulk list of PetRegistrationDTO objects.
+     *
+     * @param size
+     *      An integer for the size of the list
+     *
+     * @return list
+     */
+    public static List<PetRegistrationDTO> createBulkPetList(final int size)
+    {
+        List<PetRegistrationDTO> list = new ArrayList<>(size);
+        for(int i = 0; i < size; i++) {
+            list.add(REGISTRATION_DTO);
+        }
+        return list;
+    }
+
+    /**
+     * Returns a List<PetRegistrationDTO> that contains a malformed at index 2.
+     *
+     * @param size
+     *      An integer for the size of the list
+     *
+     * @return list
+     */
+    public static List<PetRegistrationDTO> createMalformedPetList(final int size)
+    {
+        List<PetRegistrationDTO> list = new ArrayList<>(size);
+        for(int i = 0; i < size; i++) {
+            if(i == 2) {
+                list.add(REGISTRATION_DTO_MISSING_FIELDS);
+                continue;
+            }
+            list.add(REGISTRATION_DTO);
+        }
+        return list;
+    }
 }

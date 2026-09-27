@@ -1,6 +1,7 @@
 package com.johnny.petscheduler.utils;
 
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Year;
@@ -36,7 +37,7 @@ public class ValidationUtil
 
     /**
      * Parses field names and validation messages from exceptions generated
-     * during JPA validation.
+     * during JPA method-level validation.
      *
      * @param ex
      *     A MethodArgumentNotValidException object
@@ -55,6 +56,31 @@ public class ValidationUtil
                                 error.getDefaultMessage()
                         )
                 );
+
+        return errors;
+    }
+
+    /**
+     * Parses field names and validation messages from exceptions generated
+     * in JPA controller-method parameters such as List<@Valid SomeDTO>.
+     *
+     * @param ex
+     *      A HandlerMethodValidationException object
+     *
+     * @return errors
+     */
+    public static Map<String, String> parseJPAValidationErrors(final HandlerMethodValidationException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getParameterValidationResults().forEach(result -> {
+
+            String parameterName = result.getMethodParameter().getParameterName();
+
+            result.getResolvableErrors().forEach(error -> {
+                String message = error.getDefaultMessage();
+                errors.put(parameterName, message);
+            });
+        });
 
         return errors;
     }

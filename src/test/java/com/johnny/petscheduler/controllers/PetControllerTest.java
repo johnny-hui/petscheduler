@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -101,9 +103,78 @@ public class PetControllerTest
 
     @Test
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
-    void createPet_WhenBulkPetsAreProvided_ShouldAllowToCreateAllPets() throws Exception
+    void createBulkPet_WhenRequestIsValid_ShouldAllowToCreateAllPets() throws Exception
+    {
+        // Arrange
+        List<PetRegistrationDTO> request = PetTestConstants.createBulkPetList(5);
+        String stringedRequest = objectMapper.writeValueAsString(request);
+        when(petService.createPets(
+                eq(request),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.ok().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets/bulk")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(stringedRequest)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Assert
+        verify(petService).createPets(
+                eq(request),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void createBulkPet_WhenBulkPetsReceivedExceedsLimit_ShouldRejectRequest() throws Exception
     {
 
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void createBulkPet_WhenBulkPetsReceivedIsEmpty_ShouldRejectRequest() throws Exception
+    {
+
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void createBulkPet_WhenOneOfThePetsInRequestIsMalformed_ShouldRejectRequest() throws Exception
+    {
+        // Arrange
+        List<PetRegistrationDTO> request = PetTestConstants.createMalformedPetList(5);
+        String stringedRequest = objectMapper.writeValueAsString(request);
+        when(petService.createPets(
+                eq(request),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.ok().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets/bulk")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(stringedRequest)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPets(
+                eq(request),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
     }
 
     @Test
