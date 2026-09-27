@@ -43,11 +43,22 @@ public class PetController
         return petService.createPet(request, authentication);
     }
 
+    /**
+     * Bulk creates a list of Pets for a specific User.
+     *
+     * @param requests
+     *      A list of PetRegistrationDTO requests
+     *
+     * @param authentication
+     *      An Authentication object from Spring Security
+     *
+     * @return None (status OK)
+     */
     @PostMapping("/bulk")
     public ResponseEntity<Void> createPets(@Valid @RequestBody List<PetRegistrationDTO> requests,
                                            final Authentication authentication)
     {
-        return ResponseEntity.ok().build();
+        return petService.createPets(requests, authentication);
     }
 
     /**
