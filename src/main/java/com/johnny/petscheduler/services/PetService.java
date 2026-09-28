@@ -81,7 +81,7 @@ public class PetService
 
     // Read
     @Transactional(readOnly = true)
-    public PetFullResponseDTO getPet(final int petID,
+    public PetFullResponseDTO getPet(final long petID,
                                      final Authentication authentication)
     {
         User owner = (User) authentication.getPrincipal();

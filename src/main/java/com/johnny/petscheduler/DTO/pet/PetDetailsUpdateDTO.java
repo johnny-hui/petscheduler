@@ -3,15 +3,11 @@ package com.johnny.petscheduler.DTO.pet;
 import com.johnny.petscheduler.entities.pet.EnergyLevel;
 import com.johnny.petscheduler.entities.pet.PetGender;
 import com.johnny.petscheduler.entities.pet.PetSize;
-import com.johnny.petscheduler.entities.pet.PetType;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Size;
 
 /**
  * A record containing updatable information for PetDetails.
- *
- * @param type
- *      A value from PetType enum
  *
  * @param size
  *      A value from PetSize enum
@@ -38,9 +34,6 @@ import jakarta.validation.constraints.Size;
  *      A String for extra notes about the pet
  */
 public record PetDetailsUpdateDTO (
-        @Nullable
-        PetType type,
-
         @Nullable
         PetSize size,
 

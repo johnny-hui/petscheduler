@@ -149,9 +149,6 @@ public class PetUtil
     {
         PetDetails petDetail = pet.getDetails();
 
-        if(request.details().type() != null) {
-            petDetail.setType(request.details().type());
-        }
         if(request.details().size() != null) {
             petDetail.setSize(request.details().size());
         }

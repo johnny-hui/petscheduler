@@ -80,7 +80,7 @@ public class PetController
      *      Full information about a Pet
      */
     @GetMapping("/{petID}")
-    public ResponseEntity<PetFullResponseDTO> getPet(@PathVariable final int petID,
+    public ResponseEntity<PetFullResponseDTO> getPet(@PathVariable final long petID,
                                                      final Authentication authentication)
     {
         PetFullResponseDTO response = petService.getPet(petID, authentication);

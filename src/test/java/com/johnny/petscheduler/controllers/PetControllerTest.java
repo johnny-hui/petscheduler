@@ -1,8 +1,11 @@
 package com.johnny.petscheduler.controllers;
 
+import com.johnny.petscheduler.DTO.pet.PetBaseResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
+import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
 import com.johnny.petscheduler.constants.PetTestConstants;
+import com.johnny.petscheduler.exceptions.PetNotFoundException;
 import com.johnny.petscheduler.security.SecurityConfig;
 import com.johnny.petscheduler.services.PetService;
 import org.junit.jupiter.api.Test;
@@ -18,14 +21,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.johnny.petscheduler.constants.PetTestConstants.MOCK_UPDATE_DTO;
+import static com.johnny.petscheduler.constants.PetTestConstants.createMockGetPetList;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PetController.class)
 @Import(SecurityConfig.class)
@@ -68,6 +73,50 @@ public class PetControllerTest
                 any(),
                 any()
         );
+    }
+
+    @Test
+    void updatePet_ShouldRejectUnauthenticatedUser() throws Exception
+    {
+        // Arrange (create mock data for Update Pet)
+        PetUpdateDTO mockData = MOCK_UPDATE_DTO;
+        String request = this.objectMapper.writeValueAsString(mockData);
+
+        // Act
+        mockMvc.perform(
+                    put("/api/users/pets/1")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isUnauthorized());
+
+        // Assert
+        verify(petService, never()).updatePet(
+                eq(1),
+                eq(mockData),
+                any(Authentication.class)
+        );
+    }
+
+    @Test
+    void deletePet_ShouldRejectUnauthenticatedUser() throws Exception
+    {
+        // Arrange (Mock ID)
+        int petID = 1;
+
+        // Act
+        MvcResult result = mockMvc.perform(delete("/api/users/pets/" + petID))
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).deletePet(
+                eq(petID),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
     }
 
     @Test
@@ -136,14 +185,62 @@ public class PetControllerTest
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
     void createBulkPet_WhenBulkPetsReceivedExceedsLimit_ShouldRejectRequest() throws Exception
     {
+        // Arrange
+        List<PetRegistrationDTO> request = PetTestConstants.createBulkPetList(15);
+        String stringedRequest = objectMapper.writeValueAsString(request);
+        when(petService.createPets(
+                eq(request),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.ok().build());
 
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets/bulk")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(stringedRequest)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPets(
+                eq(request),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
     }
 
     @Test
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
     void createBulkPet_WhenBulkPetsReceivedIsEmpty_ShouldRejectRequest() throws Exception
     {
+        // Arrange
+        List<PetRegistrationDTO> request = new ArrayList<>();
+        String stringedRequest = objectMapper.writeValueAsString(request);
+        when(petService.createPets(
+                eq(request),
+                any(Authentication.class))
+        ).thenReturn(ResponseEntity.ok().build());
 
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets/bulk")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(stringedRequest)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPets(
+                eq(request),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
     }
 
     @Test
@@ -238,7 +335,7 @@ public class PetControllerTest
 
     @Test
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
-    void getPet_WhenUserIsAuthenticated_ShouldAllowRequest() throws Exception
+    void getPet_WhenRequestIsValidAndUserIsAuthenticated_ShouldAllowRequest() throws Exception
     {
         // Create a Mock PetResponseDTO
         PetFullResponseDTO response = PetTestConstants.GET_PET_RESPONSE_DTO;
@@ -267,14 +364,103 @@ public class PetControllerTest
 
     @Test
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void getPet_WhenUserPassesInAPetIDButDoesntOwnThePet_ShouldThrowPetNotFoundException() throws Exception
+    {
+        // Arrange
+        when(petService.getPet(
+                eq(5L),
+                any(Authentication.class)))
+            .thenThrow(new PetNotFoundException("You do not have access to this pet"));
+
+        // Act
+        MvcResult result = mockMvc.perform(get("/api/users/pets/5"))
+                .andExpect(status().isNotFound())
+                .andExpect(
+                        jsonPath("$.errorMessage")
+                        .value("You do not have access to this pet")
+                )
+                .andReturn();
+
+        // Assert
+        verify(petService).getPet(
+                eq(5L),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
     void getPet_WhenNoPetIDExists_ShouldThrowPetNotFoundException() throws Exception
     {
         // Arrange
-        String request = PetTestConstants.STRING_REGISTRATION_DTO;
+        when(petService.getPet(
+                eq(999L),
+                any(Authentication.class)))
+                .thenThrow(
+                        new PetNotFoundException("The pet with ID 999 does not exist!")
+                );
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                get("/api/users/pets/999"))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        // Arrange
+        verify(petService).getPet(
+                eq(999L),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void getAllPets_WhenRequestIsValidAndUserIsAuthenticated_ShouldAllowRequestAndReturnList() throws Exception
+    {
+        // Arrange (Create Mock Data)
+        List<PetBaseResponseDTO> mockPetList = createMockGetPetList(7);
+        when(petService.getAllPetsFromUser(
+                any(Authentication.class)))
+                .thenReturn(mockPetList);
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                    get("/api/users/pets")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$[0]").exists())  // Check object in index 0
+                .andExpect(jsonPath("$[6]").exists())  // Check object in last index
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("Tori"))
+                .andExpect(jsonPath("$[6].id").value(7))
+                .andExpect(jsonPath("$[6].name").value("Tori"))
+                .andReturn();
+
+
+        // Assert
+        verify(petService).getAllPetsFromUser(
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void updatePet_WhenRequestIsValid_ShouldAllowRequestAndReturnOK() throws Exception
+    {
+        // Arrange
 
         // Act
 
-        // Assert
-
+        // Asser
     }
 }

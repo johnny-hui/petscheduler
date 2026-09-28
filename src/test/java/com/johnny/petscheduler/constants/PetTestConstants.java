@@ -1,8 +1,6 @@
 package com.johnny.petscheduler.constants;
 
-import com.johnny.petscheduler.DTO.pet.PetDetailsRegistrationDTO;
-import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
-import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
+import com.johnny.petscheduler.DTO.pet.*;
 import com.johnny.petscheduler.entities.pet.*;
 
 import java.time.LocalDate;
@@ -39,6 +37,24 @@ public final class PetTestConstants
                     PetTrait.PROTECTIVE,
                     PetTrait.FOOD_DRIVEN
             ))
+    );
+
+    public static final PetUpdateDTO MOCK_UPDATE_DTO = new PetUpdateDTO(
+            null,
+            null,
+            null,
+            null,
+            new PetDetailsUpdateDTO(
+                    PetSize.MEDIUM,
+                    null,
+                    EnergyLevel.HIGH,
+                    true,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            null
     );
 
     public static final PetRegistrationDTO REGISTRATION_DTO_MISSING_FIELDS = new PetRegistrationDTO(
@@ -124,6 +140,29 @@ public final class PetTestConstants
                   }
             }
             """;
+
+    /**
+     * Creates and returns a mock list of PetBaseResponseDTOs when a user requests for
+     * getting all Pets owned by them.
+     *
+     * @return List<PetBaseResponseDTO>
+     */
+    public static List<PetBaseResponseDTO> createMockGetPetList(final int size)
+    {
+        List<PetBaseResponseDTO> list = new ArrayList<>();
+        long id = 0L;
+        for(int i = 0; i < size; i++) {
+            list.add(
+                new PetBaseResponseDTO(
+                        ++id,
+                        "Tori",
+                        "American Eskimo",
+                        LocalDate.parse("2000-12-09"),
+                        null
+            ));
+        }
+        return list;
+    }
 
     /**
      * Returns a bulk list of PetRegistrationDTO objects.
