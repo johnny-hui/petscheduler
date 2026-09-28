@@ -123,7 +123,7 @@ public class PetController
      * @return None
      */
     @PutMapping("/{petID}")
-    public ResponseEntity<Void> updatePet(@PathVariable final int petID,
+    public ResponseEntity<Void> updatePet(@PathVariable final long petID,
                                           @Valid @RequestBody final PetUpdateDTO request,
                                           final Authentication authentication)
     {
@@ -142,7 +142,7 @@ public class PetController
      * @return None
      */
     @DeleteMapping("/{petID}")
-    public ResponseEntity<Void> deletePet(@PathVariable final int petID,
+    public ResponseEntity<Void> deletePet(@PathVariable final long petID,
                                           final Authentication authentication)
     {
         return petService.deletePet(petID, authentication);

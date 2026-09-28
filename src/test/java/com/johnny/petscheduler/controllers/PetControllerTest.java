@@ -24,8 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.johnny.petscheduler.constants.PetTestConstants.MOCK_UPDATE_DTO;
-import static com.johnny.petscheduler.constants.PetTestConstants.createMockGetPetList;
+import static com.johnny.petscheduler.constants.PetTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -342,7 +341,7 @@ public class PetControllerTest
 
         // Arrange
         when(petService.getPet(
-                eq(1),
+                eq(1L),
                 any(Authentication.class)
         )).thenReturn(response);
 
@@ -353,7 +352,7 @@ public class PetControllerTest
 
         // Assert
         verify(petService).getPet(
-                eq(1),
+                eq(1L),
                 any(Authentication.class)
         );
 
@@ -457,10 +456,302 @@ public class PetControllerTest
     @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
     void updatePet_WhenRequestIsValid_ShouldAllowRequestAndReturnOK() throws Exception
     {
-        // Arrange
+        // Arrange (create Mock Data)
+        final long petID = 60L;
+        final PetUpdateDTO request = MOCK_UPDATE_DTO;
+        when(petService.updatePet(
+                eq(petID),
+                eq(request),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.ok().build());
 
         // Act
+        MvcResult result = mockMvc.perform(
+                put("/api/users/pets/" + petID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                )
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // Asser
+        // Assert
+        verify(petService).updatePet(
+                eq(petID),
+                eq(request),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
     }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void deletePet_WhenRequestIsValid_ShouldAllowRequestAndReturnOK() throws Exception
+    {
+        // Arrange
+        final long petID = 60L;
+        when(petService.deletePet(
+                eq(petID),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.ok().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                delete("/api/users/pets/" + petID))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // Assert
+        verify(petService).deletePet(
+                eq(petID),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void validationTest_WhenMissingNameInPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_MISSING_NAME;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(this.objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void validationTest_WhenPetTraitsIsMissingInPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_MISSING_PET_TRAITS;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(this.objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void validationTest_WhenMoreThanFivePetTraitsInPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_MORE_THAN_FIVE_TRAITS;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(this.objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void validationTest_WhenMissingPetDetailsInPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_MISSING_PET_DETAILS;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(this.objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void validationTest_WhenOneOrMoreRequiredFieldsInPetDetailsIsMissingInPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_NON_NULL_FIELDS_MISSING_PET_DETAILS;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(this.objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void validationTest_WhenInvalidEnumInPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        String mockData = REGISTRATION_DTO_INVALID_ENUM_VALUES;
+
+        // Act
+        when(petService.createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mockData)
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void regexTest_WhenNonAlphabetCharactersInPetNameFieldOfPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_FAIL_REGEX_NAME;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "john@example.com", roles = "PET_OWNER")
+    void regexTest_WhenNonAlphabetCharactersInPetBreedFieldOfPetRegistrationDTO_ShouldReturnBadRequest() throws Exception
+    {
+        // Arrange
+        PetRegistrationDTO mockData = REGISTRATION_DTO_FAIL_REGEX_BREED;
+        when(petService.createPet(
+                eq(mockData),
+                any(Authentication.class)
+        )).thenReturn(ResponseEntity.badRequest().build());
+
+        // Act
+        MvcResult result = mockMvc.perform(
+                        post("/api/users/pets")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(mockData))
+                )
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        // Assert
+        verify(petService, never()).createPet(
+                any(PetRegistrationDTO.class),
+                any(Authentication.class)
+        );
+
+        System.out.println("Status: " + result.getResponse().getStatus());
+        System.out.println("Response: " + result.getResponse().getContentAsString());
+    }
+
 }

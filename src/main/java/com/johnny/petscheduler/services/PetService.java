@@ -118,7 +118,7 @@ public class PetService
 
     // Update
     @Transactional
-    public ResponseEntity<Void> updatePet(final int petID,
+    public ResponseEntity<Void> updatePet(final long petID,
                                           final PetUpdateDTO request,
                                           final Authentication authentication)
     {
@@ -138,7 +138,7 @@ public class PetService
     }
 
     @Transactional
-    public ResponseEntity<Void> deletePet(final int petID,
+    public ResponseEntity<Void> deletePet(final long petID,
                                           final Authentication authentication)
     {
         User owner = (User) authentication.getPrincipal();

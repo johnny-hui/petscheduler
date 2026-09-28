@@ -39,6 +39,204 @@ public final class PetTestConstants
             ))
     );
 
+    /**
+     * A mock PetRegistrationDTO that contains several illegal characters for pet name.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_FAIL_REGEX_NAME = new PetRegistrationDTO(
+            "Tori123",
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    /**
+     * A mock PetRegistrationDTO that contains several illegal characters for pet breed.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_FAIL_REGEX_BREED = new PetRegistrationDTO(
+            "Tori",
+            "American Eskimo1234",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    /**
+     * A mock PetRegistrationDTO object that has several missing non-null (required) fields
+     * in PetDetails.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_NON_NULL_FIELDS_MISSING_PET_DETAILS = new PetRegistrationDTO(
+            "Tori",
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    null,
+                    PetSize.SMALL,
+                    null,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    /**
+     * A mock PetRegistrationDTO object that has several invalid enum values in PetDetails.
+     */
+    public static final String REGISTRATION_DTO_INVALID_ENUM_VALUES = """
+              {
+                  "name": "Tori",
+                  "breed": "American Eskimo",
+                  "dateOfBirth": "2000-12-09",
+                  "avatarURL": null,
+                  "details": {
+                    "type": "HAMSTER",
+                    "size": "SMALL",
+                    "gender": "UNKNOWN1234",
+                    "energyLevel": "HIGH",
+                    "isVaccinated": null,
+                    "hasBiteHistory": null,
+                    "canBeLeftAlone": null,
+                    "profileDescription": null,
+                    "extraNotes": null
+                  },
+                  "traits": [
+                    "PROTECTIVE",
+                    "FOOD_DRIVEN",
+                    "AGGRESSIVE"
+                  ]
+            }
+            """
+    ;
+
+    /**
+     * A mock PetRegistrationDTO object that has no name field.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_MISSING_NAME = new PetRegistrationDTO(
+            null,
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    /**
+     * A mock PetRegistrationDTO object that is missing PetDetails.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_MISSING_PET_DETAILS = new PetRegistrationDTO(
+            "Tori",
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            null,
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    /**
+     * A mock PetRegistrationDTO object that is missing PetTraits.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_MISSING_PET_TRAITS = new PetRegistrationDTO(
+            "Tori",
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+         null
+    );
+
+    public static final PetRegistrationDTO REGISTRATION_DTO_MORE_THAN_FIVE_TRAITS = new PetRegistrationDTO(
+            "Tori",
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            null,
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN,
+                    PetTrait.IRRITABLE,
+                    PetTrait.ATTENTION_SEEKING,
+                    PetTrait.INDEPENDENT
+            ))
+    );
+
     public static final PetUpdateDTO MOCK_UPDATE_DTO = new PetUpdateDTO(
             null,
             null,
