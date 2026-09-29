@@ -2,6 +2,7 @@ package com.johnny.petscheduler.constants;
 
 import com.johnny.petscheduler.DTO.pet.*;
 import com.johnny.petscheduler.entities.pet.*;
+import com.johnny.petscheduler.entities.users.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +32,32 @@ public final class PetTestConstants
                     null,
                     null,
                     null
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.AGGRESSIVE,
+                    PetTrait.PROTECTIVE,
+                    PetTrait.FOOD_DRIVEN
+            ))
+    );
+
+    /**
+     * An example PetRegistrationDTO object with all fields provided.
+     */
+    public static final PetRegistrationDTO REGISTRATION_DTO_ALL_FIELDS = new PetRegistrationDTO(
+            "Tori",
+            "American Eskimo",
+            LocalDate.parse("2000-12-09"),
+            "www.aws.com/23402",
+            new PetDetailsRegistrationDTO(
+                    PetType.DOG,
+                    PetSize.SMALL,
+                    PetGender.MALE,
+                    EnergyLevel.HIGH,
+                    true,
+                    true,
+                    true,
+                    "I am tori",
+                    "I need to be constantly monitored."
             ),
             new HashSet<>(Set.of(
                     PetTrait.AGGRESSIVE,
@@ -245,7 +272,7 @@ public final class PetTestConstants
             new PetDetailsUpdateDTO(
                     PetSize.MEDIUM,
                     null,
-                    EnergyLevel.HIGH,
+                    EnergyLevel.LOW,
                     true,
                     null,
                     null,
@@ -253,6 +280,29 @@ public final class PetTestConstants
                     null
             ),
             null
+    );
+
+    public static final PetUpdateDTO MOCK_UPDATE_DTO_ALL_FIELDS = new PetUpdateDTO(
+            "Edson",
+            "Yorkie",
+            LocalDate.parse("2024-11-11"),
+            "google-axis.com/1234",
+            new PetDetailsUpdateDTO(
+                    PetSize.MEDIUM,
+                    PetGender.FEMALE,
+                    EnergyLevel.LOW,
+                    true,
+                    false,
+                    true,
+                    "Edson is a beautiful yorkie!",
+                    "N/A"
+            ),
+            new HashSet<>(Set.of(
+                    PetTrait.CUDDLY,
+                    PetTrait.MISCHIEVOUS,
+                    PetTrait.TERRITORIAL,
+                    PetTrait.ANXIOUS
+            ))
     );
 
     public static final PetRegistrationDTO REGISTRATION_DTO_MISSING_FIELDS = new PetRegistrationDTO(
@@ -398,5 +448,31 @@ public final class PetTestConstants
             list.add(REGISTRATION_DTO);
         }
         return list;
+    }
+
+    public static Pet createMockPet(final User owner) {
+        Pet pet = new Pet();
+        PetDetails petDetails = new PetDetails();
+
+        pet.setId(1L);
+        pet.setOwner(owner);
+        pet.setName("Tori");
+        pet.setBreed("American Eskimo");
+        pet.setDateOfBirth(LocalDate.parse("2000-12-09"));
+        pet.setAvatarURL("https://avatars.google.com");
+
+        petDetails.setSize(PetSize.SMALL);
+        petDetails.setType(PetType.DOG);
+        petDetails.setGender(PetGender.MALE);
+        petDetails.setEnergyLevel(EnergyLevel.HIGH);
+        pet.setDetails(petDetails);
+
+        pet.setTraits(new HashSet<>(Set.of(
+                PetTrait.AGGRESSIVE,
+                PetTrait.FOOD_DRIVEN,
+                PetTrait.ATTENTION_SEEKING
+        )));
+
+        return pet;
     }
 }
