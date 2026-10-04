@@ -1,5 +1,6 @@
 package com.johnny.petscheduler.DTO.user;
 
+import com.johnny.petscheduler.entities.users.BusinessType;
 import com.johnny.petscheduler.utils.RegexUtil;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Pattern;
@@ -17,6 +18,9 @@ public class UpdatePetBusinessDTO extends UpdateUserDTO {
     @Nullable
     @Length(max = 50, message = "Address cannot exceed 50 characters")
     private String address;
+
+    @Nullable
+    private BusinessType businessType;
 
     @Nullable
     @Size(max = 100, message = "City cannot exceed 100 characters")

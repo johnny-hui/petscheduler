@@ -96,6 +96,9 @@ public class UserUpdateUtil
         if(request.getAddress() != null) {
             user.setAddress(request.getAddress().trim());
         }
+        if(request.getBusinessType() != null) {
+            user.setBusinessType(request.getBusinessType());
+        }
         if(request.getCity() != null) {
             user.setCity(request.getCity().trim());
         }

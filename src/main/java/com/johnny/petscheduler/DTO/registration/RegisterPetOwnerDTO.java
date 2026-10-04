@@ -1,9 +1,6 @@
 package com.johnny.petscheduler.DTO.registration;
 
-import com.johnny.petscheduler.utils.RegexUtil;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

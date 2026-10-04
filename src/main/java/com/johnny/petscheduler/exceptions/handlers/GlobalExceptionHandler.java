@@ -1,20 +1,21 @@
 package com.johnny.petscheduler.exceptions.handlers;
 
-import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
-import com.johnny.petscheduler.exceptions.EstablishmentYearInvalidException;
-import com.johnny.petscheduler.exceptions.UserNotFoundException;
+import com.johnny.petscheduler.exceptions.*;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
 import com.johnny.petscheduler.utils.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Instant;
 
@@ -30,6 +31,48 @@ import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
+    @ExceptionHandler(PetLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handlePetLimitExceededException(final PetLimitExceededException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                ErrorCode.PET_COUNT_EXCEEDED,
+                ERROR_TITLE_PET_COUNT_EXCEEDED,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_CONTENT);
+    }
+
+    @ExceptionHandler(PetBulkCreateEmptyException.class)
+    public ResponseEntity<ErrorResponse> handleEmptyBulkCreatePetException(final PetBulkCreateEmptyException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                ErrorCode.PET_EMPTY_LIST,
+                ERROR_TITLE_PET_CREATE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_CONTENT);
+    }
+
+    @ExceptionHandler(PetNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePetNotFoundException(final PetNotFoundException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ErrorCode.PET_NOT_FOUND,
+                ERROR_TITLE_PET_NOT_FOUND,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(final EmailAlreadyExistsException ex)
     {
@@ -86,6 +129,40 @@ public class GlobalExceptionHandler
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleMethodParameterValidationException(final HandlerMethodValidationException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ErrorCode.BAD_VALIDATION,
+                ERROR_TITLE_BAD_VALIDATION,
+                ERROR_MESSAGE_BAD_VALIDATION,
+                ValidationUtil.parseJPAValidationErrors(ex),
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleJacksonInvalidEnum(final HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+
+        if(cause instanceof InvalidFormatException invalidFormatException
+                && invalidFormatException.getTargetType().isEnum())
+        {
+            ErrorResponse body = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    ErrorCode.INVALID_ENUM_VALUE,
+                    ERROR_TITLE_INVALID_ENUM_VALUE,
+                    ValidationUtil.parseJacksonInvalidEnumErrors(invalidFormatException),
+                    null,
+                    Instant.now()
+            );
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * A general error handler that handles any exceptions generated by the server
      * and provides a structured error response.
@@ -93,8 +170,8 @@ public class GlobalExceptionHandler
      * @see ResponseEntity
      *
      * @apiNote ResponseEntity's structure
-     *      HTTP Status ->
-     *      HTTP Headers ->
+     *      HTTP Status -> 200
+     *      HTTP Headers -> Bearer: token
      *      Body: {
      *          "json_field": 123
      *      }

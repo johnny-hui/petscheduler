@@ -1,5 +1,6 @@
 package com.johnny.petscheduler.DTO.registration;
 
+import com.johnny.petscheduler.entities.users.BusinessType;
 import com.johnny.petscheduler.utils.RegexUtil;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
@@ -9,8 +10,6 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
 
-import java.time.Year;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +17,9 @@ public class RegisterPetBusinessDTO extends RegisterUserDTO {
     @Length(max = 50, message = "Business name cannot exceed 50 characters")
     @NotBlank(message = "A business name must be provided")
     private String businessName;
+
+    @NotNull(message = "A Business type is required")
+    private BusinessType businessType;
 
     @Length(max = 50, message = "Address cannot exceed 50 characters")
     @NotBlank(message = "A business address must be provided")

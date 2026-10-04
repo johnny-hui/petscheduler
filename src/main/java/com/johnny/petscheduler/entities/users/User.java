@@ -1,5 +1,6 @@
 package com.johnny.petscheduler.entities.users;
 
+import com.johnny.petscheduler.entities.pet.Pet;
 import com.johnny.petscheduler.security.user.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -52,4 +55,7 @@ public abstract class User implements UserDetails
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pet> pets = new ArrayList<>();
 }

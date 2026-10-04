@@ -90,6 +90,7 @@ public final class UserRegistrationUtil
      public static void setPetBusinessInfo(PetBusiness user, final RegisterPetBusinessDTO request)
      {
         user.setBusinessName(request.getBusinessName().trim());
+        user.setBusinessType(request.getBusinessType());
         user.setAddress(request.getAddress().trim());
         user.setCity(request.getCity().trim());
         user.setEstablishmentYear(request.getEstablishmentYear());

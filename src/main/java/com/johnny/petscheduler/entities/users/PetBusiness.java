@@ -1,11 +1,7 @@
 package com.johnny.petscheduler.entities.users;
 
 import com.johnny.petscheduler.entities.Review;
-import com.johnny.petscheduler.entities.pet.Pet;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +18,10 @@ public class PetBusiness extends User
 {
     @Column(name = "business_name", nullable = false)
     private String businessName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "business_type", nullable = false)
+    private BusinessType businessType;
 
     @Column(name = "business_addr", nullable = false)
     private String address;
@@ -43,9 +43,6 @@ public class PetBusiness extends User
 
     @Column(name = "business_phone")
     private String phoneNumber;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pet> pets = new ArrayList<>();
 
     @OneToMany(mappedBy = "reviewedUser")
     private List<Review> reviewsReceived = new ArrayList<>();
