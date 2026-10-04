@@ -4,7 +4,7 @@ import com.johnny.petscheduler.DTO.pet.PetBaseResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
-import com.johnny.petscheduler.constants.PetTestConstants;
+import com.johnny.petscheduler.utils.PetTestUtil;
 import com.johnny.petscheduler.exceptions.PetNotFoundException;
 import com.johnny.petscheduler.security.SecurityConfig;
 import com.johnny.petscheduler.services.PetService;
@@ -24,7 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.johnny.petscheduler.constants.PetTestConstants.*;
+import static com.johnny.petscheduler.utils.PetTestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -47,7 +47,7 @@ public class PetControllerTest
     @Test
     void shouldDeserializeIntoPetRegistrationDTO() throws Exception
     {
-        String requestJSON = PetTestConstants.STRING_REGISTRATION_DTO;
+        String requestJSON = PetTestUtil.STRING_REGISTRATION_DTO;
         assertDoesNotThrow(() ->
                 objectMapper.readValue(requestJSON, PetRegistrationDTO.class)
         );
@@ -123,7 +123,7 @@ public class PetControllerTest
     void createPet_RequestHasRequiredFields_ShouldAllowToCreatePet() throws Exception
     {
         // Arrange
-        String request = PetTestConstants.STRING_REGISTRATION_DTO;
+        String request = PetTestUtil.STRING_REGISTRATION_DTO;
         when(petService.createPet(
                 any(PetRegistrationDTO.class),
                 any(Authentication.class)
@@ -154,7 +154,7 @@ public class PetControllerTest
     void createBulkPet_WhenRequestIsValid_ShouldAllowToCreateAllPets() throws Exception
     {
         // Arrange
-        List<PetRegistrationDTO> request = PetTestConstants.createBulkPetList(5);
+        List<PetRegistrationDTO> request = PetTestUtil.createBulkPetList(5);
         String stringedRequest = objectMapper.writeValueAsString(request);
         when(petService.createPets(
                 eq(request),
@@ -185,7 +185,7 @@ public class PetControllerTest
     void createBulkPet_WhenBulkPetsReceivedExceedsLimit_ShouldRejectRequest() throws Exception
     {
         // Arrange
-        List<PetRegistrationDTO> request = PetTestConstants.createBulkPetList(15);
+        List<PetRegistrationDTO> request = PetTestUtil.createBulkPetList(15);
         String stringedRequest = objectMapper.writeValueAsString(request);
         when(petService.createPets(
                 eq(request),
@@ -247,7 +247,7 @@ public class PetControllerTest
     void createBulkPet_WhenOneOfThePetsInRequestIsMalformed_ShouldRejectRequest() throws Exception
     {
         // Arrange
-        List<PetRegistrationDTO> request = PetTestConstants.createMalformedPetList(5);
+        List<PetRegistrationDTO> request = PetTestUtil.createMalformedPetList(5);
         String stringedRequest = objectMapper.writeValueAsString(request);
         when(petService.createPets(
                 eq(request),
@@ -278,7 +278,7 @@ public class PetControllerTest
     void createPet_RequestHasMissingRequiredFields_ShouldRejectInvalidRequest() throws Exception
     {
         // Arrange (should fail bean validation in controller)
-        String request = PetTestConstants.REGISTRATION_DTO_MISSING_REQUIRED_FIELDS;
+        String request = PetTestUtil.REGISTRATION_DTO_MISSING_REQUIRED_FIELDS;
         when(petService.createPet(
                 any(PetRegistrationDTO.class),
                 any(Authentication.class)
@@ -308,7 +308,7 @@ public class PetControllerTest
     void getPet_WhenUnauthenticatedUser_ShouldRejectRequest() throws Exception
     {
         // Create a Mock PetResponseDTO
-        PetFullResponseDTO response = PetTestConstants.GET_PET_RESPONSE_DTO;
+        PetFullResponseDTO response = PetTestUtil.GET_PET_RESPONSE_DTO;
 
         // Arrange
         when(petService.getPet(
@@ -337,7 +337,7 @@ public class PetControllerTest
     void getPet_WhenRequestIsValidAndUserIsAuthenticated_ShouldAllowRequest() throws Exception
     {
         // Create a Mock PetResponseDTO
-        PetFullResponseDTO response = PetTestConstants.GET_PET_RESPONSE_DTO;
+        PetFullResponseDTO response = PetTestUtil.GET_PET_RESPONSE_DTO;
 
         // Arrange
         when(petService.getPet(

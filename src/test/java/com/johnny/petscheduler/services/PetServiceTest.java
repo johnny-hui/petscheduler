@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.johnny.petscheduler.constants.PetTestConstants.*;
+import static com.johnny.petscheduler.utils.PetTestUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

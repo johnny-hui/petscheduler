@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.constants;
+package com.johnny.petscheduler.utils;
 
 import com.johnny.petscheduler.DTO.pet.*;
 import com.johnny.petscheduler.entities.pet.*;
@@ -10,9 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class PetTestConstants
+public final class PetTestUtil
 {
-    private PetTestConstants() {}
+    private PetTestUtil() {}
 
     /**
      * An example PetRegistrationDTO object.
@@ -448,6 +448,31 @@ public final class PetTestConstants
             list.add(REGISTRATION_DTO);
         }
         return list;
+    }
+
+    public static Pet createMockPetForDBTests(final User owner) {
+        Pet pet = new Pet();
+        PetDetails petDetails = new PetDetails();
+
+        pet.setOwner(owner);
+        pet.setName("Tori");
+        pet.setBreed("American Eskimo");
+        pet.setDateOfBirth(LocalDate.parse("2000-12-09"));
+        pet.setAvatarURL("https://avatars.google.com");
+
+        petDetails.setSize(PetSize.SMALL);
+        petDetails.setType(PetType.DOG);
+        petDetails.setGender(PetGender.MALE);
+        petDetails.setEnergyLevel(EnergyLevel.HIGH);
+        pet.setDetails(petDetails);
+
+        pet.setTraits(new HashSet<>(Set.of(
+                PetTrait.AGGRESSIVE,
+                PetTrait.FOOD_DRIVEN,
+                PetTrait.ATTENTION_SEEKING
+        )));
+
+        return pet;
     }
 
     public static Pet createMockPet(final User owner) {
