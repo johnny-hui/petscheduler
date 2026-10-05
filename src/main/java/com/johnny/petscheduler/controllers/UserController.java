@@ -1,14 +1,14 @@
 package com.johnny.petscheduler.controllers;
 
-import com.johnny.petscheduler.DTO.user.UpdatePetBusinessDTO;
-import com.johnny.petscheduler.DTO.user.UpdatePetOwnerDTO;
-import com.johnny.petscheduler.DTO.user.UpdatePetSitterDTO;
-import com.johnny.petscheduler.DTO.user.UserResponseDTO;
+import com.johnny.petscheduler.DTO.user.profile.UserProfileDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdatePetBusinessDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdatePetOwnerDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdatePetSitterDTO;
 import com.johnny.petscheduler.services.UserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,50 +19,67 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService)
+    {
         this.userService = userService;
     }
 
     /**
-     * Gets a User by email address.
+     * Returns user information of the current user.
      *
-     * @param email
-     *      A String for the email (e.g. "/api/users?email=bob123@a.com")
+     * @param authentication
+     *      The authenticated user.
      *
      * @return UserResponseDTO
      *      Specific information the returned user
      */
-    @GetMapping
-    public ResponseEntity<UserResponseDTO> getUserByEmail(@RequestParam @Email final String email) {
-        return ResponseEntity.ok(userService.getUserByEmail(email));
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileDTO> getCurrentUserProfile(final Authentication authentication)
+    {
+        return ResponseEntity.ok(userService.getCurrentUserProfile(authentication));
     }
 
-    // TODO Later => Restrict update to only one API endpoint method with Authentication object and JWT
-    @PutMapping("/pet-owner/{id}")
-    public ResponseEntity<Void> updatePetOwner(@PathVariable final Long id,
-                                               @RequestBody @Valid final UpdatePetOwnerDTO request)
+    /**
+     * Returns information on a User's profile. A user can be either of type
+     * owner, sitter or business.
+     *
+     * @param id
+     *      A Long for the id of the user
+     *
+     * @return UserProfileDTO
+     *      A user profile DTO of type of PetOwner, PetSitter, or PetBusiness
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable final long id)
     {
-        return this.userService.updatePetOwner(id, request);
+        return ResponseEntity.ok(userService.getUserProfile(id));
     }
 
-    @PutMapping("/pet-sitter/{id}")
-    public ResponseEntity<Void> updatePetSitter(@PathVariable final Long id,
-                                                @RequestBody @Valid final UpdatePetSitterDTO request)
+    @PutMapping("/pet-owner")
+    public ResponseEntity<Void> updatePetOwner(@RequestBody @Valid final UpdatePetOwnerDTO request,
+                                               final Authentication authentication)
     {
-        return this.userService.updatePetSitter(id, request);
+        return this.userService.updatePetOwner(request, authentication);
     }
 
-    @PutMapping("/pet-business/{id}")
-    public ResponseEntity<Void> updatePetBusiness(@PathVariable final Long id,
-                                                  @RequestBody @Valid final UpdatePetBusinessDTO request)
+    @PutMapping("/pet-sitter")
+    public ResponseEntity<Void> updatePetSitter(@RequestBody @Valid final UpdatePetSitterDTO request,
+                                                final Authentication authentication)
     {
-        return this.userService.updatePetBusiness(id, request);
+        return this.userService.updatePetSitter(request, authentication);
+    }
+
+    @PutMapping("/pet-business")
+    public ResponseEntity<Void> updatePetBusiness(@RequestBody @Valid final UpdatePetBusinessDTO request,
+                                                  final Authentication authentication)
+    {
+        return this.userService.updatePetBusiness(request, authentication);
     }
 
     // Delete a specific user
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable final Long id)
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteUser(final Authentication authentication)
     {
-        return this.userService.deleteUser(id);
+        return this.userService.deleteUser(authentication);
     }
 }

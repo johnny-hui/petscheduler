@@ -45,6 +45,20 @@ public class GlobalExceptionHandler
         return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_CONTENT);
     }
 
+    @ExceptionHandler(UserProfileCannotBeLoadedException.class)
+    public ResponseEntity<ErrorResponse> handleUserProfileCannotBeLoadedException(final UserProfileCannotBeLoadedException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                ErrorCode.USER_PROFILE_CANNOT_BE_LOADED,
+                ERROR_TITLE_USER_PROFILE_ERROR,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_CONTENT);
+    }
+
     @ExceptionHandler(PetBulkCreateEmptyException.class)
     public ResponseEntity<ErrorResponse> handleEmptyBulkCreatePetException(final PetBulkCreateEmptyException ex)
     {
