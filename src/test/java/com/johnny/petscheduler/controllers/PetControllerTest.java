@@ -4,9 +4,10 @@ import com.johnny.petscheduler.DTO.pet.PetBaseResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
+import com.johnny.petscheduler.security.jwt.AuthEntryPointJWT;
 import com.johnny.petscheduler.utils.PetTestUtil;
 import com.johnny.petscheduler.exceptions.PetNotFoundException;
-import com.johnny.petscheduler.security.SecurityConfig;
+import com.johnny.petscheduler.security.configs.SecurityConfig;
 import com.johnny.petscheduler.services.PetService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PetController.class)
-@Import(SecurityConfig.class)
+@Import({AuthEntryPointJWT.class, SecurityConfig.class})
 public class PetControllerTest
 {
     @Autowired
