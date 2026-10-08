@@ -1,6 +1,8 @@
 package com.johnny.petscheduler.controllers;
 
+import com.johnny.petscheduler.DTO.authentication.JWTNewAccessDTO;
 import com.johnny.petscheduler.DTO.authentication.JWTLoginResponseDTO;
+import com.johnny.petscheduler.DTO.authentication.JWTRefreshDTO;
 import com.johnny.petscheduler.DTO.authentication.LoginUserDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
@@ -55,13 +57,16 @@ public class AuthenticationController
                 .body(response);
     }
 
-    // 2) TODO: Login (returns JWT access + refresh)
     @PostMapping("/login")
     public ResponseEntity<JWTLoginResponseDTO> login(@Valid @RequestBody LoginUserDTO request) {
-        return ResponseEntity.ok(new JWTLoginResponseDTO("", ""));
+        return ResponseEntity.ok(authenticationService.login(request));
     }
 
     // 3) Refresh
+    @PostMapping("/refresh")
+    public ResponseEntity<JWTNewAccessDTO> refresh(@Valid @RequestBody JWTRefreshDTO request) {
+        return ResponseEntity.ok(authenticationService.grantNewAccessToken(request));
+    }
 
     // 4) Logout
 }

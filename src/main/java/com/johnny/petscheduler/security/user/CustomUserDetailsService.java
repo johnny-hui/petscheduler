@@ -24,7 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override @NullMarked
-    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException
+    {
         User user = userDAO.getUserByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("[+] AUTHENTICATION ERROR: User not found");

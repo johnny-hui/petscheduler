@@ -19,7 +19,7 @@ public class AuthEntryPointJWT implements AuthenticationEntryPoint
     {
         response.sendError(
                 HttpServletResponse.SC_UNAUTHORIZED,
-                "401 Unauthorized - Authentication is required to access this resource"
+                authException.getMessage()
         );
     }
 }

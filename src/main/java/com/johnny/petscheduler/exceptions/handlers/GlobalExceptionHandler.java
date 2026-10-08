@@ -20,6 +20,7 @@ import tools.jackson.databind.exc.InvalidFormatException;
 import java.time.Instant;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
+import static com.johnny.petscheduler.security.configs.SecurityConstants.UNAUTHORIZED_ERROR_TITLE;
 
 /**
  * A global exception handler that catches and handles all exceptions that occur at controller,
@@ -31,6 +32,20 @@ import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
+    @ExceptionHandler(InvalidJWTException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidJWTException(final InvalidJWTException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ErrorCode.UNAUTHORIZED,
+                UNAUTHORIZED_ERROR_TITLE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(PetLimitExceededException.class)
     public ResponseEntity<ErrorResponse> handlePetLimitExceededException(final PetLimitExceededException ex)
     {

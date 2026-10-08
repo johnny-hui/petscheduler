@@ -1,19 +1,18 @@
 package com.johnny.petscheduler.DAO;
 
 import com.johnny.petscheduler.entities.users.User;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
-    private final EntityManager em;
-
-    public UserDAOImpl(EntityManager em) {
-        this.em = em;
-    }
+    @PersistenceContext
+    private EntityManager em;
 
     /**
      * Persists a new User to the database.
