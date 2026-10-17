@@ -20,7 +20,7 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO
     }
 
     @Override
-    public void create(final RefreshToken refreshToken) {
+    public void save(final RefreshToken refreshToken) {
         em.persist(refreshToken);
     }
 

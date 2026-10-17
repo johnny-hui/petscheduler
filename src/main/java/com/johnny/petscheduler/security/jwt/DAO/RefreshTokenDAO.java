@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface RefreshTokenDAO
 {
     // Create
-    void create(final RefreshToken refreshToken);
+    void save(final RefreshToken refreshToken);
 
     // Read
     Optional<RefreshToken> getRefreshTokenByID(final Long id);

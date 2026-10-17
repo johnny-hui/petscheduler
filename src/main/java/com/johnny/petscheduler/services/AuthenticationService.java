@@ -12,11 +12,15 @@ import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
-import com.johnny.petscheduler.exceptions.*;
+import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
+import com.johnny.petscheduler.exceptions.EstablishmentYearInvalidException;
+import com.johnny.petscheduler.exceptions.MissingRefreshTokenException;
+import com.johnny.petscheduler.exceptions.RefreshTokenNotFoundException;
 import com.johnny.petscheduler.security.jwt.DAO.RefreshTokenDAO;
 import com.johnny.petscheduler.security.jwt.RefreshToken;
 import com.johnny.petscheduler.security.jwt.TokenPair;
 import com.johnny.petscheduler.security.user.UserRole;
+import com.johnny.petscheduler.security.utils.AuthUtil;
 import com.johnny.petscheduler.security.utils.CookieUtil;
 import com.johnny.petscheduler.security.utils.JWTUtil;
 import com.johnny.petscheduler.utils.UserRegistrationUtil;
@@ -35,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Optional;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMAIL_ALREADY_EXISTS;
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_INVALID_EST_YEAR;
@@ -136,15 +141,24 @@ public class AuthenticationService
                 )
         );
 
-        // If no exceptions, then generate JWT tokens from the loaded authentication object
+        // If no exceptions, then generate JWT tokens using the loaded authentication object
         User user = (User) authentication.getPrincipal();
         TokenPair tokenPair = jwtUtil.generateTokenPair(user.getEmail());
 
-        // Persist Refresh Token
-        RefreshToken DBRefreshToken = new RefreshToken();
-        DBRefreshToken.setUser(user);
-        DBRefreshToken.setTokenHash(jwtUtil.tokenHasher(tokenPair.refresh()));
-        refreshTokenDAO.create(DBRefreshToken);
+        // Hash the refresh token (for DB entity)
+        String hash = jwtUtil.tokenHasher(tokenPair.refresh());
+
+        // Find the corresponding refresh token in DB
+        RefreshToken existingToken = refreshTokenDAO
+                .getRefreshTokenByUserID(user.getId())
+                .orElse(null);
+
+        // If exists then update; otherwise persist a new one
+        if(existingToken != null) {
+            existingToken.setTokenHash(hash);
+        } else {
+            refreshTokenDAO.save(AuthUtil.createRefreshTokenEntityForDB(user, hash));
+        }
 
         // Create and return an HttpOnly Cookie with JWT refresh token
         ResponseCookie cookie = CookieUtil.createRefreshTokenCookie(

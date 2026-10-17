@@ -1,15 +1,14 @@
 package com.johnny.petscheduler.controllers;
 
-import com.johnny.petscheduler.DTO.authentication.JWTNewAccessDTO;
 import com.johnny.petscheduler.DTO.authentication.JWTLoginResponseDTO;
+import com.johnny.petscheduler.DTO.authentication.JWTNewAccessDTO;
 import com.johnny.petscheduler.DTO.authentication.LoginUserDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetSitterDTO;
 import com.johnny.petscheduler.DTO.user.UserResponseDTO;
-import com.johnny.petscheduler.exceptions.MissingRefreshTokenException;
+import com.johnny.petscheduler.security.utils.AuthUtil;
 import com.johnny.petscheduler.services.AuthenticationService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.johnny.petscheduler.security.configs.SecurityConstants.COOKIE_NAME_JWT_REFRESH;
-import static com.johnny.petscheduler.security.configs.SecurityConstants.MISSING_REFRESH_TOKEN_COOKIE_MSG;
 
 /**
  * Serves API endpoints for user registration, user login authentication, and logout.
@@ -71,27 +67,14 @@ public class AuthenticationController
     // 3) Refresh the access token
     @PostMapping("/refresh")
     public ResponseEntity<JWTNewAccessDTO> refresh(final HttpServletRequest request) {
-        String refreshToken = extractRefreshToken(request);
+        String refreshToken = AuthUtil.extractRefreshToken(request);
         return authenticationService.refreshTokens(refreshToken);
     }
 
     // 4) Logout
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(final HttpServletRequest request) {
-        String refreshToken = extractRefreshToken(request);
+        String refreshToken = AuthUtil.extractRefreshToken(request);
         return authenticationService.logout(refreshToken);
-    }
-
-    private String extractRefreshToken(final HttpServletRequest request)
-    {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (final Cookie cookie : cookies) {
-                if (cookie.getName().equals(COOKIE_NAME_JWT_REFRESH)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        throw new MissingRefreshTokenException(MISSING_REFRESH_TOKEN_COOKIE_MSG);
     }
 }
