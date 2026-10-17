@@ -62,12 +62,13 @@ public class AuthenticationController
                 .body(response);
     }
 
+    // 2) Login
     @PostMapping("/login")
     public ResponseEntity<JWTLoginResponseDTO> login(@Valid @RequestBody LoginUserDTO request) {
         return authenticationService.login(request);
     }
 
-    // 3) Refresh
+    // 3) Refresh the access token
     @PostMapping("/refresh")
     public ResponseEntity<JWTNewAccessDTO> refresh(final HttpServletRequest request) {
         String refreshToken = extractRefreshToken(request);

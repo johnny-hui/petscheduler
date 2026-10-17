@@ -160,10 +160,11 @@ public class AuthenticationService
      * Performs token rotation when a valid refresh token is presented.
      *
      * @param existingRefreshToken
-     *      A String representing the JWT refresh token
+     *      A String representing the JWT refresh token to be validated
      *
-     * @return <code>JWTNewAccessDTO</code>
-     *      A DTO response containing the JWT access token
+     * @return <code>JWTNewAccessDTO</code>, <code>HttpOnly Cookie</code>
+     *      A DTO response containing the JWT access token and an HttpOnly cookie
+     *      containing the refresh token
      */
     @Transactional
     public ResponseEntity<JWTNewAccessDTO> refreshTokens(final String existingRefreshToken)
@@ -201,18 +202,33 @@ public class AuthenticationService
         throw new MissingRefreshTokenException(JWT_REFRESH_NOT_FOUND_MSG);
     }
 
-    // Logout
+    /**
+     * Performs user logout by performing refresh token deletion and
+     * creating an HttpOnly clear cookie that removes stored refresh token
+     * in client browser.
+     *
+     * @param existingRefreshToken
+     *      A String representing the JWT refresh token to be validated
+     *
+     * @return <code>ResponseEntity</code> & <code>HttpOnly Cookie</code>
+     *      Returns 204 No Content if successful, or 401 unauthorized otherwise
+     */
     @Transactional
     public ResponseEntity<Void> logout(final String existingRefreshToken)
     {
         // Validate the refreshToken
         Claims claims = jwtUtil.parseToken(existingRefreshToken);
 
-        // Verify refresh token and extract claims
+        // Delete refreshToken by User ID and create a delete HttpOnly Cookie
         if (claims != null && jwtUtil.isTokenRefresh(claims)) {
-            // Get refreshToken from DB
+            String email = jwtUtil.getEmailFromToken(claims);
+            User user = userDAO.getUserByEmail(email);
+            refreshTokenDAO.deleteByUserID(user.getId());
 
-            // Clear existing HttpOnly cookie containing the refreshToken
+            ResponseCookie clearCookie = CookieUtil.clearRefreshTokenCookie();
+            return ResponseEntity.noContent()
+                    .header(HttpHeaders.SET_COOKIE, clearCookie.toString())
+                    .build();
         }
         throw new MissingRefreshTokenException(JWT_REFRESH_NOT_FOUND_MSG);
     }

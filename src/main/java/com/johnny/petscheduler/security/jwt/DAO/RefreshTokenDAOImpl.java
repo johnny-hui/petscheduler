@@ -50,4 +50,14 @@ public class RefreshTokenDAOImpl implements RefreshTokenDAO
     public void delete(final RefreshToken refreshToken) {
         em.remove(refreshToken);
     }
+
+    @Override
+    public void deleteByUserID(final Long userId) {
+        em.createQuery("""
+            DELETE FROM RefreshToken rt
+            WHERE rt.user.id = :userId
+            """)
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
 }

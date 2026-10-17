@@ -15,4 +15,5 @@ public interface RefreshTokenDAO
 
     // Delete
     void delete(final RefreshToken refreshToken);
+    void deleteByUserID(final Long userId);
 }
