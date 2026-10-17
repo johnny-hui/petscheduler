@@ -15,7 +15,7 @@ import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_ME
  * This utility class provides functions that facilitates the creation
  * of UserProfileDTOs into their proper subtypes.
  */
-public class UserProfileUtil
+public final class UserProfileUtil
 {
     private UserProfileUtil() {}
 

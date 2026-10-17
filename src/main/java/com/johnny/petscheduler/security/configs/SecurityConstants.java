@@ -13,4 +13,13 @@ public class SecurityConstants
     public static final String JWT_REFRESH = "refresh";
     public static final String UNAUTHORIZED_ERROR_TITLE = "Authentication Failed";
     public static final String UNAUTHORIZED_ERROR_MSG = "401 Unauthorized - Authentication is required to access this resource";
+    public static final String MISSING_REFRESH_TOKEN_COOKIE_MSG = "No refresh token cookie was found!";
+    public static final String MISSING_JWT_REFRESH_ERROR_TITLE = "Refresh Token was not provided";
+    public static final String JWT_REFRESH_NOT_FOUND_TITLE = "Refresh Token Not Found";
+    public static final String JWT_REFRESH_NOT_FOUND_MSG = "No matching refresh token was found!";
+
+    // HttpOnly Cookie constants
+    public static final String COOKIE_NAME_JWT_REFRESH = "refreshToken";
+    public static final boolean COOKIE_TOGGLE_HTTPS = false;
+    public static final String COOKIE_PATH = "/api/auth";
 }

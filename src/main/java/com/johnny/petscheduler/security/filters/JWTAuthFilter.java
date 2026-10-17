@@ -3,6 +3,7 @@ package com.johnny.petscheduler.security.filters;
 import com.johnny.petscheduler.security.jwt.AuthEntryPointJWT;
 import com.johnny.petscheduler.security.user.CustomUserDetailsService;
 import com.johnny.petscheduler.security.utils.JWTUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,9 +45,10 @@ public class JWTAuthFilter extends OncePerRequestFilter
     {
         try {
             String token = parseRequestForJWT(request);
-            if(token != null && jwtUtil.validateToken(token)) {
-                final String email = jwtUtil.getEmailFromToken(token);
-                final UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+            if(token != null) {
+                Claims claims = jwtUtil.parseToken(token);
+                String email = jwtUtil.getEmailFromToken(claims);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
                 // Set Authentication Context (once JWT auth has passed)
                 UsernamePasswordAuthenticationToken authToken =
@@ -67,6 +69,7 @@ public class JWTAuthFilter extends OncePerRequestFilter
                     response,
                     new InsufficientAuthenticationException(UNAUTHORIZED_ERROR_MSG, e)
             );
+            return;
         }
         // Pass on request and response to next filter in the chain
         filterChain.doFilter(request, response);

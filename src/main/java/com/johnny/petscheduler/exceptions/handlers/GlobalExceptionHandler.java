@@ -4,6 +4,7 @@ import com.johnny.petscheduler.exceptions.*;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
 import com.johnny.petscheduler.utils.ValidationUtil;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import tools.jackson.databind.exc.InvalidFormatException;
 import java.time.Instant;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
-import static com.johnny.petscheduler.security.configs.SecurityConstants.UNAUTHORIZED_ERROR_TITLE;
+import static com.johnny.petscheduler.security.configs.SecurityConstants.*;
 
 /**
  * A global exception handler that catches and handles all exceptions that occur at controller,
@@ -39,6 +40,48 @@ public class GlobalExceptionHandler
                 HttpStatus.UNAUTHORIZED.value(),
                 ErrorCode.UNAUTHORIZED,
                 UNAUTHORIZED_ERROR_TITLE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleJWTException(final JwtException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ErrorCode.UNAUTHORIZED,
+                UNAUTHORIZED_ERROR_TITLE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(MissingRefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRefreshTokenException(final MissingRefreshTokenException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ErrorCode.UNAUTHORIZED,
+                MISSING_JWT_REFRESH_ERROR_TITLE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(RefreshTokenNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRefreshTokenNotFoundException(final RefreshTokenNotFoundException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                ErrorCode.UNAUTHORIZED,
+                JWT_REFRESH_NOT_FOUND_TITLE,
                 ex.getMessage(),
                 null,
                 Instant.now()

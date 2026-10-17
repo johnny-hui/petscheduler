@@ -15,7 +15,7 @@ import java.util.Locale;
 /**
  * Contains utility functions to facilitate updating Users.
  */
-public class UserUpdateUtil
+public final class UserUpdateUtil
 {
     // Prevent Instantiation
     public UserUpdateUtil() {}
