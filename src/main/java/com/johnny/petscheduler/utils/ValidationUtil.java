@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * A utility class that provides methods for validating various data.
  */
-public class ValidationUtil
+public final class ValidationUtil
 {
     // Prevent Instantiation
     private ValidationUtil() {}

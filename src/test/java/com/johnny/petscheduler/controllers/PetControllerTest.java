@@ -4,14 +4,20 @@ import com.johnny.petscheduler.DTO.pet.PetBaseResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetFullResponseDTO;
 import com.johnny.petscheduler.DTO.pet.PetRegistrationDTO;
 import com.johnny.petscheduler.DTO.pet.PetUpdateDTO;
-import com.johnny.petscheduler.utils.PetTestUtil;
 import com.johnny.petscheduler.exceptions.PetNotFoundException;
-import com.johnny.petscheduler.security.SecurityConfig;
+import com.johnny.petscheduler.security.configs.SecurityConfig;
+import com.johnny.petscheduler.security.filters.JWTAuthFilter;
+import com.johnny.petscheduler.security.jwt.AuthEntryPointJWT;
+import com.johnny.petscheduler.security.user.CustomUserDetailsService;
+import com.johnny.petscheduler.security.utils.JWTUtil;
 import com.johnny.petscheduler.services.PetService;
+import com.johnny.petscheduler.utils.PetTestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -44,6 +50,15 @@ public class PetControllerTest
     @MockitoBean
     private PetService petService;
 
+    @MockitoBean
+    private JWTUtil jwtUtil;
+
+    @MockitoBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockitoBean
+    private AuthEntryPointJWT authEntryPointJWT;
+
     @Test
     void shouldDeserializeIntoPetRegistrationDTO() throws Exception
     {
@@ -61,7 +76,7 @@ public class PetControllerTest
                 post("/api/users/pets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                    {
+                                {
                                     "name": "Buddy"
                                 }
                                 """)

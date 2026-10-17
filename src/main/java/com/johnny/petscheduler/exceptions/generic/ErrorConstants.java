@@ -19,9 +19,11 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_PET_UPDATE = "UPDATE PET ERROR: ";
     public static final String ERROR_TITLE_PET_DELETE = "DELETE PET ERROR: ";
     public static final String ERROR_TITLE_PET_CREATE = "CREATE PET ERROR: ";
+    public static final String ERROR_TITLE_USER_PROFILE_ERROR = "User Profile Error: ";
 
     public static final String ERROR_MESSAGE_BAD_VALIDATION = "One or more fields provided has failed validation.";
     public static final String ERROR_MESSAGE_USER_NOT_FOUND = "User with the provided email does not exist!";
+    public static final String ERROR_MESSAGE_GENERAL_USER_NOT_FOUND = "The user requested cannot be found or does not exist!";
     public static final String ERROR_MESSAGE_EMAIL_ALREADY_EXISTS = "An account with the provided email already exists!";
     public static final String ERROR_MESSAGE_INVALID_EST_YEAR = "An invalid business establishment year was provided";
     public static final String ERROR_MESSAGE_BAD_CREDENTIALS = "The provided username or password is incorrect";
@@ -32,4 +34,5 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_EMPTY = "No pets were provided.";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_PROVIDED = "You have provided more pets for registration than the max limit of pets allowed";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_EXCEEDED = "You cannot register more pets than the max limit of pets allowed";
+    public static final String ERROR_MESSAGE_USER_PROFILE_ERROR= "The requested user profile cannot be loaded at this time";
 }

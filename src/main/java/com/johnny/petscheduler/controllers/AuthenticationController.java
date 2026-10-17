@@ -1,12 +1,15 @@
 package com.johnny.petscheduler.controllers;
 
 import com.johnny.petscheduler.DTO.authentication.JWTLoginResponseDTO;
+import com.johnny.petscheduler.DTO.authentication.JWTNewAccessDTO;
 import com.johnny.petscheduler.DTO.authentication.LoginUserDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetSitterDTO;
 import com.johnny.petscheduler.DTO.user.UserResponseDTO;
+import com.johnny.petscheduler.security.utils.AuthUtil;
 import com.johnny.petscheduler.services.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,13 +58,23 @@ public class AuthenticationController
                 .body(response);
     }
 
-    // 2) TODO: Login (returns JWT access + refresh)
+    // 2) Login
     @PostMapping("/login")
     public ResponseEntity<JWTLoginResponseDTO> login(@Valid @RequestBody LoginUserDTO request) {
-        return ResponseEntity.ok(new JWTLoginResponseDTO("", ""));
+        return authenticationService.login(request);
     }
 
-    // 3) Refresh
+    // 3) Refresh the access token
+    @PostMapping("/refresh")
+    public ResponseEntity<JWTNewAccessDTO> refresh(final HttpServletRequest request) {
+        String refreshToken = AuthUtil.extractRefreshToken(request);
+        return authenticationService.refreshTokens(refreshToken);
+    }
 
     // 4) Logout
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(final HttpServletRequest request) {
+        String refreshToken = AuthUtil.extractRefreshToken(request);
+        return authenticationService.logout(refreshToken);
+    }
 }

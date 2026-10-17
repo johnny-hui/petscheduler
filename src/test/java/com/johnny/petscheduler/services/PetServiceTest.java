@@ -10,7 +10,7 @@ import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.exceptions.PetLimitExceededException;
 import com.johnny.petscheduler.exceptions.PetNotFoundException;
-import com.johnny.petscheduler.security.SecurityConfig;
+import com.johnny.petscheduler.security.configs.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

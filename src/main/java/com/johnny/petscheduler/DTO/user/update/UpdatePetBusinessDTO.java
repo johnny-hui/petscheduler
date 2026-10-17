@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.DTO.user;
+package com.johnny.petscheduler.DTO.user.update;
 
 import com.johnny.petscheduler.entities.users.BusinessType;
 import com.johnny.petscheduler.utils.RegexUtil;

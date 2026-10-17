@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.DTO.user;
+package com.johnny.petscheduler.DTO.user.update;
 
 import jakarta.annotation.Nullable;
 import lombok.Getter;

@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * A utility class that contains methods that facilitate various Pet CRUD operations.
  */
-public class PetUtil
+public final class PetUtil
 {
     // Prevent instantiation
     private PetUtil() {}

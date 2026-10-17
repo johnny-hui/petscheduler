@@ -45,7 +45,7 @@ public class PetDAOImplTest
         petDAO.createPet(pet);
 
         // Assert (pet should have ID of 1)
-        Pet result = entityManager.find(Pet.class, 1L);
+        Pet result = entityManager.find(Pet.class, pet.getId());
         assertNotNull(result);
         assertEquals(pet.getName(), result.getName());
     }
@@ -329,7 +329,7 @@ public class PetDAOImplTest
         entityManager.clear();  // => removes the managed entity from persistence context
 
         // Act
-        Pet updatedPet = entityManager.find(Pet.class, 1L);
+        Pet updatedPet = entityManager.find(Pet.class, pet.getId());
         updatedPet.setName("Charlie");
         updatedPet.setBreed("Yorkie");
         petDAO.updatePet(updatedPet);

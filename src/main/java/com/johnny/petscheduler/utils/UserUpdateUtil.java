@@ -1,9 +1,9 @@
 package com.johnny.petscheduler.utils;
 
-import com.johnny.petscheduler.DTO.user.UpdatePetBusinessDTO;
-import com.johnny.petscheduler.DTO.user.UpdatePetOwnerDTO;
-import com.johnny.petscheduler.DTO.user.UpdatePetSitterDTO;
-import com.johnny.petscheduler.DTO.user.UpdateUserDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdatePetBusinessDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdatePetOwnerDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdatePetSitterDTO;
+import com.johnny.petscheduler.DTO.user.update.UpdateUserDTO;
 import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
@@ -15,7 +15,7 @@ import java.util.Locale;
 /**
  * Contains utility functions to facilitate updating Users.
  */
-public class UserUpdateUtil
+public final class UserUpdateUtil
 {
     // Prevent Instantiation
     public UserUpdateUtil() {}
