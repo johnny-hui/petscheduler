@@ -33,6 +33,20 @@ import static com.johnny.petscheduler.security.configs.SecurityConstants.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
+    @ExceptionHandler(InvalidAvailabilityDateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAvailabilityDateException(final InvalidAvailabilityDateException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ErrorCode.INVALID_AVAILABILITY,
+                ERROR_TITLE_INVALID_AVAILABILITY,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidJWTException.class)
     public ResponseEntity<ErrorResponse> handleInvalidJWTException(final InvalidJWTException ex)
     {

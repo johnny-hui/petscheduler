@@ -34,5 +34,13 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_EMPTY = "No pets were provided.";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_PROVIDED = "You have provided more pets for registration than the max limit of pets allowed";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_EXCEEDED = "You cannot register more pets than the max limit of pets allowed";
-    public static final String ERROR_MESSAGE_USER_PROFILE_ERROR= "The requested user profile cannot be loaded at this time";
+    public static final String ERROR_MESSAGE_USER_PROFILE_ERROR = "The requested user profile cannot be loaded at this time";
+
+    // Availability Exceptions
+    public static final String ERROR_TITLE_INVALID_AVAILABILITY = "Invalid Availability Provided";
+    public static final String ERROR_MESSAGE_EMPTY_AVAILABILITY = "No availabilities were provided.";
+    public static final String ERROR_MESSAGE_INVALID_AVAILABILITY_PAST = "Availability date cannot be in the past";
+    public static final String ERROR_MESSAGE_AVAILABILITY_START_AFTER_END = "One or more availabilities have a start time that is later than or equal to the end time.";
+    public static final String ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE = "The start time must be set in the future!";
+
 }

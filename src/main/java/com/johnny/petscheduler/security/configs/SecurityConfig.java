@@ -3,9 +3,11 @@ package com.johnny.petscheduler.security.configs;
 import com.johnny.petscheduler.security.filters.JWTAuthFilter;
 import com.johnny.petscheduler.security.jwt.AuthEntryPointJWT;
 import com.johnny.petscheduler.security.user.CustomUserDetailsService;
+import com.johnny.petscheduler.security.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -20,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * A configuration class that loads beans required for authentication and authorization,
- * password hashing, and other security-related operations.
+ * API security, password hashing, and other security-related operations.
  */
 @Configuration
 @EnableWebSecurity
@@ -78,6 +80,19 @@ public class SecurityConfig
                 .authorizeHttpRequests(auth -> auth
                         // Public APIs (no auth required) -> ex: Login or Register
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // Availability Endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/availabilities/**")
+                        .hasAnyRole(UserRole.PET_SITTER.name(), UserRole.PET_BUSINESS.name())
+
+                        .requestMatchers(HttpMethod.PUT, "/api/availabilities/**")
+                        .hasAnyRole(UserRole.PET_SITTER.name(), UserRole.PET_BUSINESS.name())
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/availabilities/**")
+                        .hasAnyRole(UserRole.PET_SITTER.name(), UserRole.PET_BUSINESS.name())
+
+                        .requestMatchers(HttpMethod.GET, "/api/availabilities/**")
+                        .authenticated()
 
                         // Add any protected APIs here
                         .anyRequest().authenticated()
