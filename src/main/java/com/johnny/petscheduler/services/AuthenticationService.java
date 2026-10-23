@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Locale;
-import java.util.Optional;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMAIL_ALREADY_EXISTS;
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_INVALID_EST_YEAR;
