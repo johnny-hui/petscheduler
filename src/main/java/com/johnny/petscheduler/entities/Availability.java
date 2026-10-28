@@ -27,10 +27,10 @@ public class Availability
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // NOTE: for only PetSitters & PetBusinesses
+    // NOTE: A serviceProvider can be either a PetSitter or PetBusiness
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private User serviceProvider;
 
     @Column(name = "available_date", nullable = false)
     private LocalDate availableDate;

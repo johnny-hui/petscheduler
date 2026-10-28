@@ -46,6 +46,9 @@ public abstract class User implements UserDetails
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
     @Column(name = "last_active")
     private Instant lastActive;
 

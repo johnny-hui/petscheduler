@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_ACCESS_DENIED;
-import static com.johnny.petscheduler.utils.AvailabilityUtil.isAvailableDateInPast;
+import static com.johnny.petscheduler.utils.AvailabilityUtil.validateAvailableDate;
 
 @Service
 public class AvailabilityService
@@ -35,46 +35,50 @@ public class AvailabilityService
     {
         // Check if the availability belongs to the user
 
+        // Get the specific availability from DB
     }
 
     @Transactional(readOnly = true)
     public List<AvailabilityResponseDTO> getOwnAvailabilities(final Authentication authentication)
     {
         // Check if the availability belongs to the user
+
+        // Get all availabilities from DB
     }
 
     @Transactional(readOnly = true)
     public List<AvailabilityResponseDTO> getUserAvailabilities(final Long userID,
                                                                final Authentication authentication)
     {
+        // Check if the availability belongs to the user
 
+        // Get all availabilities from DB
     }
 
     // Create (POST)
-
     @Transactional
-    public AvailabilityResponseDTO createAvailability(final AvailabilityRequestDTO availabilityRequestDTO,
+    public AvailabilityResponseDTO createAvailability(final AvailabilityRequestDTO request,
                                                       final Authentication authentication)
     {
         // Get User object after passing Spring Authentication
         User user = (User) authentication.getPrincipal();
 
-        // Perform user role check
+        // Perform user role check and validate the Availability request
         if(user instanceof PetSitter || user instanceof PetBusiness) {
-            if(!isAvailableDateInPast(availabilityRequestDTO)) {
-                // Check: The date and times are present.
+            if(!validateAvailableDate(request)) {
+                // Constraint 1: If it's date is TODAY, the start time must be in the future
 
-                // Check: startTime is before endTime.
+                // Constraint 2: startTime must be before endTime.
 
-                // Check: The date isn't in the past.
+                // Constraint 3: Start and end times are of 15 minute increments
 
-                // Check: If it's today, the start time must be past current time.
+                // Constraint 4: Availability must be at least 3 hours minimum
 
-                // Check: If start and end times
+                // Constraint 5: Availability must be within 90 days plus current date
 
-                // Check: Minimum 3 hour gap required between startTime and endTime
+                // Constraint 6: For any overlapping availability windows
 
-                // Check: For any overlapping availability windows (might require queries)
+                // Persist Availability
             }
         }
         throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
@@ -90,7 +94,7 @@ public class AvailabilityService
 
     // Update (PUT)
     @Transactional
-    public AvailabilityResponseDTO updateAvailability(final AvailabilityRequestDTO availabilityRequestDTO,
+    public AvailabilityResponseDTO updateAvailability(final AvailabilityRequestDTO request,
                                                       final Authentication authentication)
     {
         return null;
@@ -105,7 +109,7 @@ public class AvailabilityService
     }
 
     @Transactional
-    public ResponseEntity<Void> deleteAvailabilitiesInBulk(final List<Long> availabilityIDList,
+    public ResponseEntity<Void> deleteAvailabilitiesInBulk(final List<Long> requests,
                                                            final Authentication authentication)
     {
         return null;

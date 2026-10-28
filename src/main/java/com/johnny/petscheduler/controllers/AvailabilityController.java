@@ -78,6 +78,14 @@ public class AvailabilityController
                  .body(response);
     }
 
+    @GetMapping("/me/history")
+    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousOwnAvailabilities(final Authentication authentication)
+    {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
     @GetMapping("/user/{userID}")
     public ResponseEntity<List<AvailabilityResponseDTO>> getUserAvailabilities(@PathVariable
                                                                                final Long userID,
@@ -86,6 +94,17 @@ public class AvailabilityController
         List<AvailabilityResponseDTO> response = availabilityService
                 .getUserAvailabilities(userID, authentication);
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/user/{userID}/history")
+    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousUserAvailabilities(
+            @PathVariable
+            final Long userID,
+            final Authentication authentication)
+    {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);

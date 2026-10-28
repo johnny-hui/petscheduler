@@ -1,91 +1,89 @@
 package com.johnny.petscheduler.utils;
 
-import com.johnny.petscheduler.DTO.availabilities.AvailabilityRequestDTO;
 import com.johnny.petscheduler.exceptions.InvalidAvailabilityDateException;
+import com.johnny.petscheduler.exceptions.InvalidAvailabilityTimeException;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 
 /**
- * Contains utility functions that assist in validating Availabilities.
+ * Contains utility functions that assist in validating and creating Availabilities.
  */
 public final class AvailabilityUtil
 {
+    private static final int MAX_AVAILABILITY_LIMIT_DAYS = 90;
+    private static final int MIN_AVAILABILITY_DURATION_HOURS = 3;
+
     private AvailabilityUtil(){}
 
     /**
-     * Checks if an Availability is in the past.
+     * Checks if an Availability's date chosen is valid. A date is considered
+     * valid if it is not before the current day's date.
      *
      * @throws InvalidAvailabilityDateException
      *      Thrown if the Availability is set in a past date from current date.
      *
-     * @param request
-     *      An AvailabilityRequestDTO object
-     *
-     * @return <code>boolean(T/F)</code>
-     *      False if date not is in the past, InvalidAvailabilityDateException if true
+     * @param availableDate
+     *      A LocalDate object representing the chosen date for availability
      */
-    public static boolean isAvailableDateInPast(final AvailabilityRequestDTO request)
+    public static void validateAvailableDate(final LocalDate availableDate)
             throws InvalidAvailabilityDateException
     {
         LocalDate today = LocalDate.now();
-        if(request.availableDate().isBefore(today)) {
+        if(availableDate.isBefore(today)) {
             throw new InvalidAvailabilityDateException(ERROR_MESSAGE_INVALID_AVAILABILITY_PAST);
         }
-        return false;
     }
 
     /**
-     * Checks whether startTime is before endTime.
+     * Validates whether an Availability's selected date is
+     * within the max limit.
      *
-     * @throws InvalidAvailabilityDateException
-     *      Thrown if the startTime is after the endTime
+     * @implNote <code>Reason</code>
+     *      This is to prevent a service provider from being able to
+     *      create Availabilities that are too far from current date
      *
-     * @param startTime
-     *      A LocalTime object
-     *
-     * @param endTime
-     *      A LocalTime object
-     *
-     * @return <code>boolean(T/F)</code>
-     *      True if start is before end; InvalidAvailabilityDateException otherwise
+     * @param availableDate
+     *      A LocalDate object containing the chosen date for availability
      */
-    public static boolean isStartBeforeEnd(final LocalTime startTime,
-                                           final LocalTime endTime) throws InvalidAvailabilityDateException
-    {
-        if(startTime.isBefore(endTime)) {
-            return true;
-        }
-        throw new InvalidAvailabilityDateException(ERROR_MESSAGE_AVAILABILITY_START_AFTER_END);
-    }
-
-    /**
-     * Checks whether an Availability's startTime is in the future when the
-     * current date is today.
-     *
-     * @param date
-     *      A LocalDate object
-     *
-     * @param startTime
-     *      A LocalTime object
-     *
-     * @return <code>boolean(T/F)</code>
-     *      True if start time is in the future, InvalidAvailabilityDateException otherwise
-     *
-     * @throws InvalidAvailabilityDateException
-     *      Thrown if start time is not in the future.
-     */
-    public static boolean isStartTimeInFutureIfToday(final LocalDate date,
-                                                     final LocalTime startTime) throws InvalidAvailabilityDateException
+    public static void validateWithinMaxFutureDate(final LocalDate availableDate)
     {
         Clock clock = Clock.systemDefaultZone();
         LocalDate today = LocalDate.now(clock);
-        if (date.isEqual(today) && !startTime.isAfter(LocalTime.now(clock))) {
-            throw new InvalidAvailabilityDateException(ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE);
+        LocalDate maxDate = today.plusDays(MAX_AVAILABILITY_LIMIT_DAYS);
+
+        if(availableDate.isAfter(maxDate)) {
+            throw new InvalidAvailabilityDateException(
+                    ERROR_MESSAGE_AVAILABILITY_PAST_MAX
+                    + MAX_AVAILABILITY_LIMIT_DAYS
+            );
         }
-        return true;
+    }
+
+    /**
+     * Checks if the duration of an Availability is greater than or
+     * equal to the minimum amount of hours or more.
+     *
+     * @param startTime
+     *      The starting time for an Availability
+     *
+     * @param endTime
+     *      The end time for an Availability
+     */
+    public static void validateMinimumDuration(final LocalTime startTime,
+                                                  final LocalTime endTime)
+    {
+        Duration requestedWindow = Duration.between(startTime, endTime);
+        Duration minimumDuration = Duration.ofHours(MIN_AVAILABILITY_DURATION_HOURS);
+
+        if(requestedWindow.compareTo(minimumDuration) < 0) {
+            throw new InvalidAvailabilityTimeException(
+                    ERROR_MESSAGE_AVAILABILITY_MIN_HOURS_NOT_MET + MIN_AVAILABILITY_DURATION_HOURS
+            );
+        }
     }
 }

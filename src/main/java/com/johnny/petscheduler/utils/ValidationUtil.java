@@ -4,6 +4,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
+import java.time.LocalTime;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,8 +16,32 @@ import java.util.stream.Collectors;
  */
 public final class ValidationUtil
 {
+    private static final int TIME_INCREMENT_MINUTES = 15;
+
     // Prevent Instantiation
     private ValidationUtil() {}
+
+    /**
+     * Validates whether an Availability or Booking's time falls within
+     * a time increment of 15 (e.g. 6:00, 6:15, 6:30, 6:45).
+     *
+     * @implNote Used for <code>Availability</code> & <code>Booking</code>
+     *
+     * @param time
+     *      A LocalTime object
+     *
+     * @return bool (T/F)
+     *      True if valid; false otherwise
+     */
+    public static boolean isValidTimeIncrement(final LocalTime time) {
+        if (time == null) {
+            return false;
+        }
+
+        return time.getMinute() % TIME_INCREMENT_MINUTES == 0
+                && time.getSecond() == 0
+                && time.getNano() == 0;
+    }
 
     /**
      * Validates the value of the business year established.
