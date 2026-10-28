@@ -4,6 +4,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
+import java.time.LocalTime;
 import java.time.Year;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
  */
 public final class ValidationUtil
 {
+    private static final int TIME_INCREMENT_MINUTES = 15;
+
     private static final Set<String> VALID_COUNTRY_CODES = Set.of(
             Locale.getISOCountries()
     );
@@ -31,6 +34,28 @@ public final class ValidationUtil
      */
     public static boolean isValidCountry(final String country) {
         return country != null && VALID_COUNTRY_CODES.contains(country);
+    }
+
+    /**
+     * Validates whether an Availability or Booking's time falls within
+     * a time increment of 15 (e.g. 6:00, 6:15, 6:30, 6:45).
+     *
+     * @implNote Used for <code>Availability</code> & <code>Booking</code>
+     *
+     * @param time
+     *      A LocalTime object
+     *
+     * @return bool (T/F)
+     *      True if valid; false otherwise
+     */
+    public static boolean isValidTimeIncrement(final LocalTime time) {
+        if (time == null) {
+            return false;
+        }
+
+        return time.getMinute() % TIME_INCREMENT_MINUTES == 0
+                && time.getSecond() == 0
+                && time.getNano() == 0;
     }
 
     /**

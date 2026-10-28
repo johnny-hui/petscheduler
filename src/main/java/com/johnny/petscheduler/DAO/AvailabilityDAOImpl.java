@@ -76,7 +76,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
                 """
                 SELECT a
                 FROM Availability a
-                WHERE a.user.id = :userID
+                WHERE a.serviceProvider.id = :userID
                 ORDER BY a.id ASC
                 """,
                 Availability.class
@@ -127,7 +127,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
         TypedQuery<Long> query = em.createQuery("""
                 SELECT a.id
                 FROM Availability a
-                WHERE a.user.id = :userID
+                WHERE a.serviceProvider.id = :userID
                   AND a.availableDate = :date
                   AND a.startTime < :endTime
                   AND a.endTime > :startTime
@@ -140,5 +140,87 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
 
         query.setMaxResults(1);
         return query.getResultList().isEmpty() ? false : true;
+    }
+
+    /**
+     * Gets a list of upcoming Availabilities from the database.
+     *
+     * @param userID
+     *      A Long for the User ID
+     *
+     * @param today
+     *      A LocalDate object for current day
+     *
+     * @param now
+     *      A LocalTime object for the current time
+     *
+     * @return <code>List of Availabilities</code>
+     */
+    public List<Availability> getUpcomingAvailabilities(final Long userID,
+                                                        final LocalDate today,
+                                                        final LocalTime now)
+    {
+        TypedQuery<Availability> query = em.createQuery(
+                """
+                SELECT a
+                FROM Availability a
+                WHERE a.serviceProvider.id = : userID
+                  AND (
+                      a.availableDate > :today
+                      OR (
+                          a.availableDate = :today
+                          AND a.endTime > :now
+                      )
+                  )
+                ORDER BY a.availableDate ASC, a.startTime ASC
+                """,
+                Availability.class
+        );
+
+        query.setParameter("userID", userID);
+        query.setParameter("today", today);
+        query.setParameter("now", now);
+        return query.getResultList();
+    }
+
+    /**
+     * Gets a list of past Availabilities from the database.
+     *
+     * @param userID
+     *      A Long for the User ID
+     *
+     * @param today
+     *      A LocalDate object for current day
+     *
+     * @param now
+     *      A LocalTime object for the current time
+     *
+     * @return <code>List of Availabilities</code>
+     */
+    public List<Availability> getPastAvailabilities(final Long userID,
+                                                    final LocalDate today,
+                                                    final LocalTime now)
+    {
+        TypedQuery<Availability> query = em.createQuery(
+                """
+                SELECT a
+                FROM Availability a
+                WHERE a.serviceProvider.id = : userID
+                  AND (
+                      a.availableDate < :today
+                      OR (
+                          a.availableDate = :today
+                          AND a.endTime <= :now
+                      )
+                  )
+                ORDER BY a.availableDate DESC, a.startTime DESC
+                """,
+                Availability.class
+        );
+
+        query.setParameter("userID", userID);
+        query.setParameter("today", today);
+        query.setParameter("now", now);
+        return query.getResultList();
     }
 }

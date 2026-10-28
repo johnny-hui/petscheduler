@@ -42,5 +42,6 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_INVALID_AVAILABILITY_PAST = "Availability date cannot be in the past";
     public static final String ERROR_MESSAGE_AVAILABILITY_START_AFTER_END = "One or more availabilities have a start time that is later than or equal to the end time.";
     public static final String ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE = "The start time must be set in the future!";
-
+    public static final String ERROR_MESSAGE_AVAILABILITY_PAST_MAX = "The date selected for availability cannot exceed the maximum number of days allowed in advance: ";
+    public static final String ERROR_MESSAGE_AVAILABILITY_MIN_HOURS_NOT_MET = "The duration of your availability must be more than or equal to the following minimum amount of hours: ";
 }
