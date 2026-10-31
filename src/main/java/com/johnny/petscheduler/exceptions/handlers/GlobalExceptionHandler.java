@@ -1,6 +1,9 @@
 package com.johnny.petscheduler.exceptions.handlers;
 
 import com.johnny.petscheduler.exceptions.*;
+import com.johnny.petscheduler.exceptions.availability.AvailabilityOverlapException;
+import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateException;
+import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityTimeException;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
 import com.johnny.petscheduler.utils.ValidationUtil;
@@ -33,6 +36,20 @@ import static com.johnny.petscheduler.security.configs.SecurityConstants.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
+    @ExceptionHandler(AvailabilityOverlapException.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityOverlapException(final AvailabilityOverlapException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ErrorCode.AVAILABILITY_CONFLICT,
+                ERROR_TITLE_AVAILABILITY_CONFLICT,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(InvalidAvailabilityDateException.class)
     public ResponseEntity<ErrorResponse> handleInvalidAvailabilityDateException(final InvalidAvailabilityDateException ex)
     {

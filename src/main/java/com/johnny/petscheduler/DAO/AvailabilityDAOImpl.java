@@ -143,7 +143,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
     }
 
     /**
-     * Gets a list of upcoming Availabilities from the database.
+     * Gets a list of current and upcoming Availabilities from the database.
      *
      * @param userID
      *      A Long for the User ID
