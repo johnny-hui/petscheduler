@@ -6,6 +6,7 @@ import com.johnny.petscheduler.services.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMPTY_AVAILABILITY;
+import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_MAX_BULK_AVAILABILITY_CREATE_LIMIT;
 
 @RestController
 @RequestMapping("/api/availabilities")
@@ -31,22 +33,22 @@ public class AvailabilityController
                                                                       final AvailabilityRequestDTO request,
                                                                       final Authentication authentication)
     {
-        AvailabilityResponseDTO response = availabilityService
-                .createAvailability(request, authentication);
-
+        AvailabilityResponseDTO response = availabilityService.createAvailability(request, authentication);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<List<AvailabilityResponseDTO>> createAvailabilities(
-            @Valid @RequestBody @NotEmpty(message = ERROR_MESSAGE_EMPTY_AVAILABILITY)
-            List<@Valid AvailabilityRequestDTO> requests,
+    public ResponseEntity<List<AvailabilityResponseDTO>> createBulkAvailabilities(
+            @RequestBody
+            @NotEmpty(message = ERROR_MESSAGE_EMPTY_AVAILABILITY)
+            @Size(max = 5, message = ERROR_MESSAGE_MAX_BULK_AVAILABILITY_CREATE_LIMIT)
+            final List<@Valid AvailabilityRequestDTO> requests,
             final Authentication authentication)
     {
         List<AvailabilityResponseDTO> responses = availabilityService
-                .createAvailabilities(requests, authentication);
+                .createBulkAvailabilities(requests, authentication);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -55,13 +57,9 @@ public class AvailabilityController
 
     // Read (GET)
     @GetMapping("/{availabilityID}")
-    public ResponseEntity<AvailabilityResponseDTO> getAvailability(@PathVariable
-                                                                   final Long availabilityID,
-                                                                   final Authentication authentication)
+    public ResponseEntity<AvailabilityResponseDTO> getAvailability(@PathVariable final Long availabilityID)
     {
-        AvailabilityResponseDTO response = availabilityService
-                .getAvailability(availabilityID, authentication);
-
+        AvailabilityResponseDTO response = availabilityService.getAvailability(availabilityID);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -87,23 +85,16 @@ public class AvailabilityController
     }
 
     @GetMapping("/user/{userID}")
-    public ResponseEntity<List<AvailabilityResponseDTO>> getUserAvailabilities(@PathVariable
-                                                                               final Long userID,
-                                                                               final Authentication authentication)
+    public ResponseEntity<List<AvailabilityResponseDTO>> getUserAvailabilities(@PathVariable final Long userID)
     {
-        List<AvailabilityResponseDTO> response = availabilityService
-                .getUserAvailabilities(userID, authentication);
-
+        List<AvailabilityResponseDTO> response = availabilityService.getUserAvailabilities(userID);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
     }
 
     @GetMapping("/user/{userID}/history")
-    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousUserAvailabilities(
-            @PathVariable
-            final Long userID,
-            final Authentication authentication)
+    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousUserAvailabilities(@PathVariable final Long userID)
     {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -111,14 +102,15 @@ public class AvailabilityController
     }
 
     // Update (PUT)
+    // NOTE: Should only be able to update any availabilities from the current date
+    // NOTE: Should only be able to update ^^ if there are no active and REQUESTED bookings within window
+    // NOTE: Should only be able to update the start and end times for a specific date
     @PutMapping
     public ResponseEntity<AvailabilityResponseDTO> updateAvailability(@Valid @RequestBody
                                                                       final AvailabilityRequestDTO request,
                                                                       final Authentication authentication)
     {
-        AvailabilityResponseDTO response = availabilityService
-                .updateAvailability(request, authentication);
-
+        AvailabilityResponseDTO response = availabilityService.updateAvailability(request, authentication);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);

@@ -1,5 +1,8 @@
-package com.johnny.petscheduler.exceptions;
+package com.johnny.petscheduler.exceptions.availability;
 
+/**
+ * Thrown when an Availability request fails validation on the date.
+ */
 public class InvalidAvailabilityDateException extends RuntimeException
 {
     public InvalidAvailabilityDateException(String message) {

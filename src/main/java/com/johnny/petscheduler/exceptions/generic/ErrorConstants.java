@@ -37,11 +37,16 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_USER_PROFILE_ERROR = "The requested user profile cannot be loaded at this time";
 
     // Availability Exceptions
+    public static final String ERROR_TITLE_AVAILABILITY_CONFLICT = "Availability Conflict Error (Overlap)";
     public static final String ERROR_TITLE_INVALID_AVAILABILITY = "Invalid Availability Provided";
     public static final String ERROR_MESSAGE_EMPTY_AVAILABILITY = "No availabilities were provided.";
     public static final String ERROR_MESSAGE_INVALID_AVAILABILITY_PAST = "Availability date cannot be in the past";
-    public static final String ERROR_MESSAGE_AVAILABILITY_START_AFTER_END = "One or more availabilities have a start time that is later than or equal to the end time.";
-    public static final String ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE = "The start time must be set in the future!";
+    public static final String ERROR_MESSAGE_AVAILABILITY_INVALID_START = "One or more availabilities have a start time that is later than or equal to the end time.";
+    public static final String ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE = "The start time must be ahead of current time!";
     public static final String ERROR_MESSAGE_AVAILABILITY_PAST_MAX = "The date selected for availability cannot exceed the maximum number of days allowed in advance: ";
     public static final String ERROR_MESSAGE_AVAILABILITY_MIN_HOURS_NOT_MET = "The duration of your availability must be more than or equal to the following minimum amount of hours: ";
+    public static final String ERROR_MESSAGE_INVALID_START_TIME_INCREMENT = "Start time must be in 15 minute increments (e.g. 6:00, 6:15, 6:30, etc.)";
+    public static final String ERROR_MESSAGE_INVALID_END_TIME_INCREMENT = "End time must be in 15 minute increments (e.g. 6:00, 6:15, 6:30, etc.)";
+    public static final String ERROR_MESSAGE_AVAILABILITY_OVERLAP = "One or more requested availabilities for creation are overlapping with an existing availability!";
+    public static final String ERROR_MESSAGE_MAX_BULK_AVAILABILITY_CREATE_LIMIT = "A maximum of 5 availabilities are allowed per bulk creation request";
 }
