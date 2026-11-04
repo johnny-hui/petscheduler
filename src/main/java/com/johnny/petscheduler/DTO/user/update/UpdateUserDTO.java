@@ -26,6 +26,16 @@ public abstract class UpdateUserDTO
     private String password;
 
     @Nullable
+    @Pattern(
+            regexp = RegexUtil.COUNTRY_CODE,
+            message = "A Country must be a two-letter ISO country code (e.g. CA, US, JP)"
+    )
+    private String country;
+
+    @Nullable
+    private String timezone;
+
+    @Nullable
     @URL(message = "An invalid URL was provided")
     private String avatarURL;
 }

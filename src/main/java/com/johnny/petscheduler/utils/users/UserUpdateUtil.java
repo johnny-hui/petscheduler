@@ -8,6 +8,8 @@ import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
+import com.johnny.petscheduler.utils.TimezoneUtil;
+import com.johnny.petscheduler.utils.ValidationUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Locale;
@@ -41,6 +43,18 @@ public final class UserUpdateUtil
         }
         if(request.getAvatarURL() != null) {
             user.setAvatarURL(request.getAvatarURL().trim());
+        }
+        if(request.getCountry() != null) {
+            if(!ValidationUtil.isValidCountry(request.getCountry())) {
+                throw new IllegalArgumentException("UPDATE ERROR: An invalid Country was provided");
+            }
+            user.setCountry(request.getCountry());
+        }
+        if(request.getTimezone() != null) {
+            if(!TimezoneUtil.isValidTimezone(request.getTimezone())) {
+                throw new IllegalArgumentException("UPDATE ERROR: An invalid timezone was provided");
+            }
+            user.setTimezone(request.getTimezone());
         }
     }
 

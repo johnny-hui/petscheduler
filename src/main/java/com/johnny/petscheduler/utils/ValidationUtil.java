@@ -1,5 +1,6 @@
 package com.johnny.petscheduler.utils;
 
+import com.johnny.petscheduler.DTO.registration.RegisterUserDTO;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import tools.jackson.databind.exc.InvalidFormatException;
@@ -129,5 +130,27 @@ public final class ValidationUtil
                 fieldName,
                 allowedValues
         );
+    }
+
+    /**
+     * Validates whether a RegisterUserDTO has a valid country and timezone.
+     *
+     * @param request
+     *      A RegisterUserDTO object
+     */
+    public static void validateCountryAndTimezone(final RegisterUserDTO request)
+            throws IllegalArgumentException
+    {
+        if (!ValidationUtil.isValidCountry(request.getCountry())) {
+            throw new IllegalArgumentException(
+                    "Invalid country was provided: " + request.getCountry()
+            );
+        }
+
+        if (!TimezoneUtil.isValidTimezone(request.getTimezone())) {
+            throw new IllegalArgumentException(
+                    "Invalid timezone was provided: " + request.getTimezone()
+            );
+        }
     }
 }

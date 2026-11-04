@@ -20,7 +20,7 @@ public final class UserProfileUtil
     private UserProfileUtil() {}
 
     /**
-     * Creates the appropriate UserProfileDTO according to the user's role.
+     * Creates and returns the appropriate UserProfileDTO according to the user's role.
      *
      * @param user
      *      A subtype of a User object
