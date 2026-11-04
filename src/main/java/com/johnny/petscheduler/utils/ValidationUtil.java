@@ -5,9 +5,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Year;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -15,8 +13,25 @@ import java.util.stream.Collectors;
  */
 public final class ValidationUtil
 {
+    private static final Set<String> VALID_COUNTRY_CODES = Set.of(
+            Locale.getISOCountries()
+    );
+
     // Prevent Instantiation
     private ValidationUtil() {}
+
+    /**
+     * Validates a country for a valid ISO 3166 country code.
+     *
+     * @param country
+     *      A String for the country
+     *
+     * @return <code>bool (T/F)</code>
+     *      True if valid; False otherwise
+     */
+    public static boolean isValidCountry(final String country) {
+        return country != null && VALID_COUNTRY_CODES.contains(country);
+    }
 
     /**
      * Validates the value of the business year established.

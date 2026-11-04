@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.utils;
+package com.johnny.petscheduler.utils.users;
 
 import com.johnny.petscheduler.DTO.user.update.UpdatePetBusinessDTO;
 import com.johnny.petscheduler.DTO.user.update.UpdatePetOwnerDTO;
@@ -38,9 +38,6 @@ public final class UserUpdateUtil
         }
         if(request.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-        if(request.getPostalCode() != null) {
-            user.setPostalCode(request.getPostalCode().trim().toUpperCase(Locale.ROOT));
         }
         if(request.getAvatarURL() != null) {
             user.setAvatarURL(request.getAvatarURL().trim());

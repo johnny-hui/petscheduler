@@ -36,8 +36,11 @@ public abstract class User implements UserDetails
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "postal_code", nullable = false)
-    private String postalCode;
+    @Column(name = "country", nullable = false, length = 2)  // Example Codes: CA, US, JP
+    private String country;
+
+    @Column(name = "timezone", nullable = false) // Example: "America/Vancouver"
+    private String timezone;
 
     @Column(name = "avatar_url")
     private String avatarURL;

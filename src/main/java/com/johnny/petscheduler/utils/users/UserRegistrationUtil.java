@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.utils;
+package com.johnny.petscheduler.utils.users;
 
 import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
@@ -9,12 +9,14 @@ import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.security.user.UserRole;
+import com.johnny.petscheduler.utils.TimezoneUtil;
+import com.johnny.petscheduler.utils.ValidationUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Locale;
 
 /**
- * A utility class that provides methods to facilitate User registration.
+ * A utility class that provides methods to validate and facilitate User registration.
  */
 public final class UserRegistrationUtil
 {
@@ -43,7 +45,8 @@ public final class UserRegistrationUtil
         user.setLastName(request.getLastName().trim());
         user.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPostalCode(request.getPostalCode().trim().toUpperCase(Locale.ROOT));
+        user.setCountry(request.getCountry());
+        user.setTimezone(request.getTimezone());
         user.setAvatarURL(request.getAvatarURL() != null ? request.getAvatarURL().trim() : null);
         user.setRole(role);
     }
@@ -98,5 +101,27 @@ public final class UserRegistrationUtil
         user.setProfileDescription(request.getProfileDescription() != null ? request.getProfileDescription().trim() : null);
         user.setWebsiteURL(request.getWebsiteURL() != null ? request.getWebsiteURL().trim() : null);
         user.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null);
+     }
+
+    /**
+     * Validates whether a RegisterUserDTO has a valid country and timezone.
+     *
+     * @param request
+     *      A RegisterUserDTO object
+     */
+     public static void validateCountryAndTimezone(final RegisterUserDTO request)
+             throws IllegalArgumentException
+     {
+         if (!ValidationUtil.isValidCountry(request.getCountry())) {
+             throw new IllegalArgumentException(
+                     "Invalid country was provided: " + request.getCountry()
+             );
+         }
+
+         if (!TimezoneUtil.isValidTimezone(request.getTimezone())) {
+             throw new IllegalArgumentException(
+                     "Invalid timezone was provided: " + request.getTimezone()
+             );
+         }
      }
 }

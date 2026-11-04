@@ -12,7 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PetSitterProfileDTO extends UserProfileDTO
 {
-    private String postalCode;
     private String profileTitle;
     private String profileDescription;
     private Double rating;

@@ -1,5 +1,7 @@
 package com.johnny.petscheduler.DTO.user;
 
+import com.johnny.petscheduler.security.user.UserRole;
+
 /**
  * A record containing response data upon successful registration or login.
  *
@@ -20,5 +22,9 @@ package com.johnny.petscheduler.DTO.user;
 public record UserResponseDTO(
         String firstName,
         String lastName,
-        String email
+        String email,
+        UserRole role,
+        String country,
+        String timezone,
+        String avatarURL
 ){}

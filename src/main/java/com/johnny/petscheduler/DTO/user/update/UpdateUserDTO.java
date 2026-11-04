@@ -26,13 +26,6 @@ public abstract class UpdateUserDTO
     private String password;
 
     @Nullable
-    @Pattern(
-            regexp = RegexUtil.CANADIAN_POSTAL_CODE,
-            message = "Invalid Postal Code was provided"
-    )
-    private String postalCode;
-
-    @Nullable
     @URL(message = "An invalid URL was provided")
     private String avatarURL;
 }
