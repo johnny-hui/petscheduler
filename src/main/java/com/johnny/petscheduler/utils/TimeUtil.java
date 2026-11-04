@@ -1,14 +1,11 @@
 package com.johnny.petscheduler.utils;
 
 import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateException;
-import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityTimeException;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_INVALID_AVAILABILITY_PAST;
 
 /**
  * This utility class provides functions that validates time.

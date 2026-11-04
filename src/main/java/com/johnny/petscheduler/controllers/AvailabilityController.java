@@ -68,9 +68,7 @@ public class AvailabilityController
     @GetMapping("/me")
     public ResponseEntity<List<AvailabilityResponseDTO>> getOwnAvailabilities(final Authentication authentication)
     {
-         List<AvailabilityResponseDTO> response = availabilityService
-                 .getOwnAvailabilities(authentication);
-
+         List<AvailabilityResponseDTO> response = availabilityService.getOwnAvailabilities(authentication);
          return ResponseEntity
                  .status(HttpStatus.OK)
                  .body(response);

@@ -1,6 +1,7 @@
 package com.johnny.petscheduler.exceptions.handlers;
 
 import com.johnny.petscheduler.exceptions.*;
+import com.johnny.petscheduler.exceptions.availability.AvailabilityNotFound;
 import com.johnny.petscheduler.exceptions.availability.AvailabilityOverlapException;
 import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateException;
 import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityTimeException;
@@ -48,6 +49,20 @@ public class GlobalExceptionHandler
                 Instant.now()
         );
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AvailabilityNotFound.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityNotFoundException(final AvailabilityNotFound ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ErrorCode.AVAILABILITY_NOT_FOUND,
+                ERROR_TITLE_AVAILABILITY_NOT_FOUND,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidAvailabilityDateException.class)

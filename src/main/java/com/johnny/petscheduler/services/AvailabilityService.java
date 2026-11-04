@@ -7,6 +7,7 @@ import com.johnny.petscheduler.entities.Availability;
 import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
+import com.johnny.petscheduler.exceptions.availability.AvailabilityNotFound;
 import com.johnny.petscheduler.exceptions.availability.AvailabilityOverlapException;
 import com.johnny.petscheduler.utils.AvailabilityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_ACCESS_DENIED;
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_AVAILABILITY_OVERLAP;
+
+import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 
 @Service
 public class AvailabilityService
@@ -33,19 +34,46 @@ public class AvailabilityService
     }
 
     // Read (GET)
+
+    /**
+     * Returns information on a specific Availability.
+     *
+     * @param availabilityID
+     *      A Long for the availability ID
+     *
+     * @return <code>AvailabilityResponseDTO</code>
+     *      A record containing Availability information
+     */
     @Transactional(readOnly = true)
     public AvailabilityResponseDTO getAvailability(final Long availabilityID)
     {
-        return availabilityDAO.getAvailabilityById(availabilityID)
-                .orElse(throw new AvailabilityNotFound);
+        Availability availability = availabilityDAO.getAvailabilityById(availabilityID)
+                .orElseThrow(() -> new AvailabilityNotFound(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
+        return AvailabilityUtil.generateResponse(availability);
     }
 
+    /**
+     * Returns a list of current and future Availabilities owned by a
+     * PetSitter or PetBusiness.
+     *
+     * @param authentication
+     *      An Authentication object
+     *
+     * @return <code>A List of Availabilities</code>
+     */
     @Transactional(readOnly = true)
     public List<AvailabilityResponseDTO> getOwnAvailabilities(final Authentication authentication)
     {
-        // Check if the availability belongs to the user
+        // Get User object after passing Spring Authentication
+        User user = (User) authentication.getPrincipal();
 
         // Get all upcoming availabilities from DB
+        if(user instanceof PetSitter || user instanceof PetBusiness) {
+            List<Availability> results = availabilityDAO.getUpcomingAvailabilities(
+                    user.getId()
+        }
+
+        throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
     }
 
     @Transactional(readOnly = true)

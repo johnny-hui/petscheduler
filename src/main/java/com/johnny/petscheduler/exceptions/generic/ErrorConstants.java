@@ -28,7 +28,7 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_INVALID_EST_YEAR = "An invalid business establishment year was provided";
     public static final String ERROR_MESSAGE_BAD_CREDENTIALS = "The provided username or password is incorrect";
     public static final String ERROR_MESSAGE_BAD_ACCOUNT_STATUS = "The account is locked, please contact admin for assistance";
-    public static final String ERROR_MESSAGE_ACCESS_DENIED = "You are not authorized to access this resource";
+    public static final String ERROR_MESSAGE_ACCESS_DENIED = "You are not authorized to access this resource!";
     public static final String ERROR_MESSAGE_PET_COUNT_EXCEEDED = "You have already reached max limit of pets registered";
     public static final String ERROR_MESSAGE_PET_FETCH = "The pet that was requested does not exist or you lack access to this resource";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_EMPTY = "No pets were provided.";
@@ -37,6 +37,7 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_USER_PROFILE_ERROR = "The requested user profile cannot be loaded at this time";
 
     // Availability Exceptions
+    public static final String ERROR_TITLE_AVAILABILITY_NOT_FOUND = "Availability Not Found";
     public static final String ERROR_TITLE_AVAILABILITY_CONFLICT = "Availability Conflict Error (Overlap)";
     public static final String ERROR_TITLE_INVALID_AVAILABILITY = "Invalid Availability Provided";
     public static final String ERROR_MESSAGE_EMPTY_AVAILABILITY = "No availabilities were provided.";
@@ -49,4 +50,5 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_INVALID_END_TIME_INCREMENT = "End time must be in 15 minute increments (e.g. 6:00, 6:15, 6:30, etc.)";
     public static final String ERROR_MESSAGE_AVAILABILITY_OVERLAP = "One or more requested availabilities for creation are overlapping with an existing availability!";
     public static final String ERROR_MESSAGE_MAX_BULK_AVAILABILITY_CREATE_LIMIT = "A maximum of 5 availabilities are allowed per bulk creation request";
+    public static final String ERROR_MESSAGE_AVAILABILITY_NOT_FOUND = "The requested availability does not exist!";
 }
