@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.utils;
+package com.johnny.petscheduler.utils.users;
 
 import com.johnny.petscheduler.DTO.user.profile.PetBusinessProfileDTO;
 import com.johnny.petscheduler.DTO.user.profile.PetOwnerProfileDTO;
@@ -9,6 +9,7 @@ import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.exceptions.UserProfileCannotBeLoadedException;
+
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_USER_PROFILE_ERROR;
 
 /**
@@ -20,7 +21,7 @@ public final class UserProfileUtil
     private UserProfileUtil() {}
 
     /**
-     * Creates the appropriate UserProfileDTO according to the user's role.
+     * Creates and returns the appropriate UserProfileDTO according to the user's role.
      *
      * @param user
      *      A subtype of a User object
@@ -43,14 +44,14 @@ public final class UserProfileUtil
                 PetSitterProfileDTO response = new PetSitterProfileDTO();
                 setBaseUserInformation(response, sitter);
                 setSitterInformation(response, sitter);
-                return new PetSitterProfileDTO();
+                return response;
             }
             case PET_BUSINESS -> {
                 PetBusiness business = (PetBusiness) user;
                 PetBusinessProfileDTO response = new PetBusinessProfileDTO();
                 setBaseUserInformation(response, business);
                 setBusinessInformation(response, business);
-                return new PetBusinessProfileDTO();
+                return response;
             }
             default -> {
                 throw new UserProfileCannotBeLoadedException(ERROR_MESSAGE_USER_PROFILE_ERROR);
@@ -78,7 +79,6 @@ public final class UserProfileUtil
     private static void setSitterInformation(PetSitterProfileDTO response,
                                              final PetSitter sitter)
     {
-        response.setPostalCode(sitter.getPostalCode());
         response.setProfileTitle(sitter.getProfileTitle());
         response.setProfileDescription(sitter.getProfileDescription());
         response.setYearsOfExperience(sitter.getYearsOfExperience());

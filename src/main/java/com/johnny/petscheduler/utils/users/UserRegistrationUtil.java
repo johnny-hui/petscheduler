@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.utils;
+package com.johnny.petscheduler.utils.users;
 
 import com.johnny.petscheduler.DTO.registration.RegisterPetBusinessDTO;
 import com.johnny.petscheduler.DTO.registration.RegisterPetOwnerDTO;
@@ -9,12 +9,13 @@ import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.security.user.UserRole;
+import com.johnny.petscheduler.utils.ValidationUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Locale;
 
 /**
- * A utility class that provides methods to facilitate User registration.
+ * A utility class that provides methods to validate and facilitate User registration.
  */
 public final class UserRegistrationUtil
 {
@@ -39,11 +40,17 @@ public final class UserRegistrationUtil
                                        final UserRole role,
                                        final RegisterUserDTO request)
     {
+        String country = request.getCountry().trim().toUpperCase(Locale.ROOT);
+        String timezone = request.getTimezone().trim();
+        ValidationUtil.validateCountryAndTimezone(country, timezone);
+
         user.setFirstName(request.getFirstName().trim());
         user.setLastName(request.getLastName().trim());
         user.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPostalCode(request.getPostalCode().trim().toUpperCase(Locale.ROOT));
+        user.setCountry(country);
+        user.setCity(request.getCity().trim().toUpperCase(Locale.ROOT));
+        user.setTimezone(timezone);
         user.setAvatarURL(request.getAvatarURL() != null ? request.getAvatarURL().trim() : null);
         user.setRole(role);
     }

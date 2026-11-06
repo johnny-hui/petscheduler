@@ -258,6 +258,18 @@ public class GlobalExceptionHandler
     public ResponseEntity<ErrorResponse> handleGeneralException(final Exception ex) {
         log.error("[+] An unexpected error has occurred", ex);
 
+        if(ex instanceof IllegalArgumentException) {
+            ErrorResponse body = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    ErrorCode.BAD_VALIDATION,
+                    ERROR_TITLE_BAD_VALIDATION,
+                    ex.getMessage(),
+                    null,
+                    Instant.now()
+            );
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
+
         if(ex instanceof BadCredentialsException) {
             ErrorResponse body = new ErrorResponse(
                     HttpStatus.UNAUTHORIZED.value(),

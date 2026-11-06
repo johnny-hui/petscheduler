@@ -23,8 +23,9 @@ import com.johnny.petscheduler.security.user.UserRole;
 import com.johnny.petscheduler.security.utils.AuthUtil;
 import com.johnny.petscheduler.security.utils.CookieUtil;
 import com.johnny.petscheduler.security.utils.JWTUtil;
-import com.johnny.petscheduler.utils.UserRegistrationUtil;
 import com.johnny.petscheduler.utils.ValidationUtil;
+import com.johnny.petscheduler.utils.users.UserRegistrationUtil;
+import com.johnny.petscheduler.utils.users.UserResponseUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Locale;
-import java.util.Optional;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMAIL_ALREADY_EXISTS;
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_INVALID_EST_YEAR;
@@ -84,7 +84,7 @@ public class AuthenticationService
         UserRegistrationUtil.setPetOwnerInfo(user, request);
         userDAO.createUser(user);
 
-        return new UserResponseDTO(request.getFirstName(), request.getLastName(), request.getEmail());
+        return UserResponseUtil.createUserResponseDTO(request, user.getRole());
     }
 
     @Transactional
@@ -99,7 +99,7 @@ public class AuthenticationService
         UserRegistrationUtil.setPetSitterInfo(user, request);
         userDAO.createUser(user);
 
-        return new UserResponseDTO(request.getFirstName(), request.getLastName(), request.getEmail());
+        return UserResponseUtil.createUserResponseDTO(request, user.getRole());
     }
 
     @Transactional
@@ -117,7 +117,7 @@ public class AuthenticationService
         UserRegistrationUtil.setPetBusinessInfo(user, request);
         userDAO.createUser(user);
 
-        return new UserResponseDTO(request.getFirstName(), request.getLastName(), request.getEmail());
+        return UserResponseUtil.createUserResponseDTO(request, user.getRole());
     }
 
     /**

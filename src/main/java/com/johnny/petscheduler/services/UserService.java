@@ -11,7 +11,7 @@ import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
 import com.johnny.petscheduler.exceptions.UserNotFoundException;
-import com.johnny.petscheduler.utils.UserUpdateUtil;
+import com.johnny.petscheduler.utils.users.UserUpdateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Locale;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
-import static com.johnny.petscheduler.utils.UserProfileUtil.createProfileDTO;
+import static com.johnny.petscheduler.utils.users.UserProfileUtil.createProfileDTO;
 
 @Service
 public class UserService {

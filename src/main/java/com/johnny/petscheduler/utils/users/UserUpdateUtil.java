@@ -1,4 +1,4 @@
-package com.johnny.petscheduler.utils;
+package com.johnny.petscheduler.utils.users;
 
 import com.johnny.petscheduler.DTO.user.update.UpdatePetBusinessDTO;
 import com.johnny.petscheduler.DTO.user.update.UpdatePetOwnerDTO;
@@ -8,6 +8,8 @@ import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
+import com.johnny.petscheduler.utils.TimezoneUtil;
+import com.johnny.petscheduler.utils.ValidationUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Locale;
@@ -39,11 +41,25 @@ public final class UserUpdateUtil
         if(request.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-        if(request.getPostalCode() != null) {
-            user.setPostalCode(request.getPostalCode().trim().toUpperCase(Locale.ROOT));
-        }
         if(request.getAvatarURL() != null) {
             user.setAvatarURL(request.getAvatarURL().trim());
+        }
+        if(request.getCountry() != null) {
+            String country = request.getCountry().trim();
+            if(!ValidationUtil.isValidCountry(country)) {
+                throw new IllegalArgumentException("UPDATE ERROR: An invalid Country was provided");
+            }
+            user.setCountry(country);
+        }
+        if(request.getTimezone() != null) {
+            String timezone = request.getTimezone().trim();
+            if(!TimezoneUtil.isValidTimezone(timezone)) {
+                throw new IllegalArgumentException("UPDATE ERROR: An invalid timezone was provided");
+            }
+            user.setTimezone(timezone);
+        }
+        if(request.getCity() != null) {
+            user.setCity(request.getCity().trim().toUpperCase(Locale.ROOT));
         }
     }
 

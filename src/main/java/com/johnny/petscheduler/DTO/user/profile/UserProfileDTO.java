@@ -17,6 +17,9 @@ public abstract class UserProfileDTO
     private String firstName;
     private String lastName;
     private String avatarURL;
+    private String country;
+    private String city;
+    private String timezone;
     private Instant lastActive;
     private UserRole role;
 }

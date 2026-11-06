@@ -76,8 +76,7 @@ public class UserController {
         return this.userService.updatePetBusiness(request, authentication);
     }
 
-    // Delete a specific user
-    @DeleteMapping("/delete")
+    @DeleteMapping("/me/delete")
     public ResponseEntity<Void> deleteUser(final Authentication authentication)
     {
         return this.userService.deleteUser(authentication);

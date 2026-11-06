@@ -35,14 +35,18 @@ public class UserTestUtil
             }
         }
 
-        // Assign base user info
+        assignBaseUserInfo(user, role);
+        return user;
+    }
+
+    private static void assignBaseUserInfo(final User user, final UserRole role) {
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john_doe@abc.com");
         user.setPassword("password123");
-        user.setPostalCode("ABC 123");
+        user.setCountry("US");
+        user.setCity("Vancouver");
+        user.setTimezone("America/Los_Angeles");
         user.setRole(role);
-
-        return user;
     }
 }

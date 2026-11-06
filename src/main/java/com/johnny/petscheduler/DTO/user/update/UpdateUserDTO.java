@@ -4,6 +4,7 @@ import com.johnny.petscheduler.utils.RegexUtil;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,10 +28,21 @@ public abstract class UpdateUserDTO
 
     @Nullable
     @Pattern(
-            regexp = RegexUtil.CANADIAN_POSTAL_CODE,
-            message = "Invalid Postal Code was provided"
+            regexp = RegexUtil.COUNTRY_CODE,
+            message = "A Country must be a two-letter ISO country code (e.g. CA, US, JP)"
     )
-    private String postalCode;
+    private String country;
+
+    @Nullable
+    @Size(min = 2, max = 100, message = "City must be between 2 and 100 characters")
+    @Pattern(
+            regexp = RegexUtil.CITY_PATTERN,
+            message = "City contains invalid characters"
+    )
+    private String city;
+
+    @Nullable
+    private String timezone;
 
     @Nullable
     @URL(message = "An invalid URL was provided")
