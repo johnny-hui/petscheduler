@@ -39,6 +39,9 @@ public abstract class User implements UserDetails
     @Column(name = "country", nullable = false, length = 2)  // Example Codes: CA, US, JP
     private String country;
 
+    @Column(name = "city", nullable = false, length = 100)
+    private String city;
+
     @Column(name = "timezone", nullable = false) // Example: "America/Vancouver"
     private String timezone;
 

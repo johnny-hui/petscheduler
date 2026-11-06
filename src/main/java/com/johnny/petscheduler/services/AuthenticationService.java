@@ -78,7 +78,6 @@ public class AuthenticationService
         if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
-        ValidationUtil.validateCountryAndTimezone(request);
 
         PetOwner user = new PetOwner();
         UserRegistrationUtil.setBaseUserInfo(user, passwordEncoder, UserRole.PET_OWNER, request);
@@ -94,7 +93,6 @@ public class AuthenticationService
         if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
-        ValidationUtil.validateCountryAndTimezone(request);
 
         PetSitter user = new PetSitter();
         UserRegistrationUtil.setBaseUserInfo(user, passwordEncoder, UserRole.PET_SITTER, request);
@@ -113,7 +111,6 @@ public class AuthenticationService
         if(userDAO.doesUserExist(request.getEmail().trim().toLowerCase(Locale.ROOT))) {
             throw new EmailAlreadyExistsException(ERROR_MESSAGE_EMAIL_ALREADY_EXISTS);
         }
-        ValidationUtil.validateCountryAndTimezone(request);
 
         PetBusiness user = new PetBusiness();
         UserRegistrationUtil.setBaseUserInfo(user, passwordEncoder, UserRole.PET_BUSINESS, request);

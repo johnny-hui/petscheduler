@@ -5,6 +5,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,12 +39,20 @@ public abstract class RegisterUserDTO
         )
         private String password;
 
-        @NotBlank(message = "A Country is required")
+        @NotBlank(message = "A country is required")
         @Pattern(
                 regexp = RegexUtil.COUNTRY_CODE,
                 message = "A Country must be a two-letter ISO country code (e.g. CA, US, JP)"
         )
         private String country;
+
+        @NotBlank(message = "A city is required")
+        @Size(min = 2, max = 100, message = "City must be between 2 and 100 characters")
+        @Pattern(
+                regexp = RegexUtil.CITY_PATTERN,
+                message = "City contains invalid characters"
+        )
+        private String city;
 
         @NotBlank(message = "A timezone is required")
         private String timezone;

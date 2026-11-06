@@ -9,6 +9,7 @@ import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.exceptions.UserProfileCannotBeLoadedException;
+
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_USER_PROFILE_ERROR;
 
 /**

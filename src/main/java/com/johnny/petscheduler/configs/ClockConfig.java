@@ -6,10 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
 
 /**
- * A configuration class that loads and manages the application clock.
+ * A configuration class that loads and manages an application-wide clock.
  */
 @Configuration
-public class ClockConfig {
+public class ClockConfig
+{
     @Bean
     public Clock clock() {
         return Clock.systemUTC();

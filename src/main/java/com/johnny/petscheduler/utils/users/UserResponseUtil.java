@@ -32,6 +32,7 @@ public final class UserResponseUtil
                 request.getEmail(),
                 role,
                 request.getCountry(),
+                request.getCity(),
                 request.getTimezone(),
                 request.getAvatarURL()
         );

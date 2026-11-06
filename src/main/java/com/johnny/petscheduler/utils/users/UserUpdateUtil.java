@@ -45,16 +45,21 @@ public final class UserUpdateUtil
             user.setAvatarURL(request.getAvatarURL().trim());
         }
         if(request.getCountry() != null) {
-            if(!ValidationUtil.isValidCountry(request.getCountry())) {
+            String country = request.getCountry().trim();
+            if(!ValidationUtil.isValidCountry(country)) {
                 throw new IllegalArgumentException("UPDATE ERROR: An invalid Country was provided");
             }
-            user.setCountry(request.getCountry());
+            user.setCountry(country);
         }
         if(request.getTimezone() != null) {
-            if(!TimezoneUtil.isValidTimezone(request.getTimezone())) {
+            String timezone = request.getTimezone().trim();
+            if(!TimezoneUtil.isValidTimezone(timezone)) {
                 throw new IllegalArgumentException("UPDATE ERROR: An invalid timezone was provided");
             }
-            user.setTimezone(request.getTimezone());
+            user.setTimezone(timezone);
+        }
+        if(request.getCity() != null) {
+            user.setCity(request.getCity().trim().toUpperCase(Locale.ROOT));
         }
     }
 
