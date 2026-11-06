@@ -10,6 +10,10 @@ import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateEx
 import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityTimeException;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.time.Clock;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 import static com.johnny.petscheduler.utils.TimeUtil.*;
 
@@ -40,6 +44,25 @@ public final class AvailabilityUtil
                 availability.getStartTime(),
                 availability.getEndTime()
         );
+    }
+
+    /**
+     * Generates a list of AvailabilityResponseDTOs.
+     *
+     * @param availabilities
+     *      A List of Availability objects.
+     *
+     * @return <code>List of AvailabilityDTOs</code>
+     */
+    public static List<AvailabilityResponseDTO> generateResponse(final List<Availability> availabilities)
+    {
+        List<AvailabilityResponseDTO> response = new ArrayList<>();
+        if(!availabilities.isEmpty()) {
+            for(final Availability availability : availabilities) {
+                response.add(generateResponse(availability));
+            }
+        }
+        return response;
     }
 
     /**
@@ -74,19 +97,25 @@ public final class AvailabilityUtil
      * @param request
      *      An AvailabilityRequestDTO object
      */
-    public static void validateAvailability(final AvailabilityRequestDTO request)
+    public static void validateAvailability(final User user,
+                                            final AvailabilityRequestDTO request,
+                                            final Clock clock)
             throws InvalidAvailabilityDateException, InvalidAvailabilityTimeException
     {
         // Constraint 1: Ensure the date is not in the past
         validateAvailableDateNotInPast(
+                user.getTimezone(),
                 request.availableDate(),
+                clock,
                 new InvalidAvailabilityDateException(ERROR_MESSAGE_INVALID_AVAILABILITY_PAST)
         );
 
         // Constraint 2: If it's date is TODAY, the start time must be in the future
         validateStartTimeInFutureIfToday(
+                user.getTimezone(),
                 request.availableDate(),
                 request.startTime(),
+                clock,
                 new InvalidAvailabilityTimeException(ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE)
         );
 
@@ -120,8 +149,10 @@ public final class AvailabilityUtil
 
         // Constraint 6: Availability must be within 90 days plus current date
         validateWithinMaxFutureDate(
+                user.getTimezone(),
                 request.availableDate(),
                 MAX_AVAILABILITY_LIMIT_DAYS,
+                clock,
                 new InvalidAvailabilityDateException(
                         ERROR_MESSAGE_AVAILABILITY_PAST_MAX +
                         MAX_AVAILABILITY_LIMIT_DAYS

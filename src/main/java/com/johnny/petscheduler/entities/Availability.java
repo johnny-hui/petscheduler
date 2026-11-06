@@ -9,6 +9,14 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * Represents a user's availability based on a certain date, start and end times.
+ *
+ * @implNote <code>User Timezones</code>
+ *      User timezones are independent of the LocalDate and LocalTime.
+ *      It is rather used to validate Availabilities based on their timezones
+ *      rather than the server's timezone (UTC).
+ */
 @Entity
 @Table(
         name = "availability",

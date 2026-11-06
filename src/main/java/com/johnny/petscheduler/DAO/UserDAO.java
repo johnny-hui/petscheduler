@@ -2,6 +2,7 @@ package com.johnny.petscheduler.DAO;
 
 import com.johnny.petscheduler.entities.users.User;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDAO
 {
@@ -9,8 +10,8 @@ public interface UserDAO
     void createUser(final User user);
 
     // b) Read
-    User getUserByEmail(final String email);
-    User getUserById(final Long id);
+    Optional<User> getUserByEmail(final String email);
+    Optional<User> getUserById(final Long id);
     List<User> getAllUsers();
     boolean doesUserExist(final String email);
     boolean doesUserExist(final Long id);

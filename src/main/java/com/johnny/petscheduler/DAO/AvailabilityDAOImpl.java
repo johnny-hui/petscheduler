@@ -224,4 +224,110 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
         query.setParameter("now", now);
         return query.getResultList();
     }
+
+    /**
+     * An over-loaded method that returns a list of Availabilities based on that satisfies
+     * the requested date, start and end times (without user ID).
+     *
+     * @param requestedDate
+     *      A LocalDate object
+     *
+     * @param requestedStart
+     *      A LocalTime object
+     *
+     * @param requestedEnd
+     *      A LocalTime object
+     *
+     * @param page
+     *      An integer for the page number
+     *
+     * @param size
+     *      An integer for the page size
+     *
+     * @return <code>A list of Availabilities</code>
+     */
+    @Override
+    public List<Availability> getAvailabilitiesByDateAndTime(final LocalDate requestedDate,
+                                                             final LocalTime requestedStart,
+                                                             final LocalTime requestedEnd,
+                                                             final int page,
+                                                             final int size)
+    {
+        TypedQuery<Availability> query = em.createQuery(
+                """
+                SELECT a
+                FROM Availability a
+                WHERE a.availableDate = :requestedDate
+                  AND a.startTime <= :requestedStart
+                  AND a.endTime >= :requestedEnd
+                ORDER BY a.startTime ASC
+                """,
+                Availability.class
+        );
+
+        query.setParameter("requestedDate", requestedDate);
+        query.setParameter("requestedStart", requestedStart);
+        query.setParameter("requestedEnd", requestedEnd);
+
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        return query.getResultList();
+    }
+
+    /**
+     * Returns a List of Availabilities by a provider (user ID) that satisfies
+     * the requested date, start and end times.
+     *
+     * @param userID
+     *      A Long for the userID
+     *
+     * @param requestedDate
+     *      A LocalDate object
+     *
+     * @param requestedStart
+     *      A LocalTime object
+     *
+     * @param requestedEnd
+     *      A LocalTime object
+     *
+     * @param page
+     *      An integer for the page number
+     *
+     * @param size
+     *      An integer for the page size
+     *
+     * @return <code>A list of Availabilities</code>
+     */
+    @Override
+    public List<Availability> getAvailabilitiesByDateAndTime(final Long userID,
+                                                             final LocalDate requestedDate,
+                                                             final LocalTime requestedStart,
+                                                             final LocalTime requestedEnd,
+                                                             final int page,
+                                                             final int size)
+    {
+        TypedQuery<Availability> query = em.createQuery(
+               """
+               SELECT a
+               FROM Availability a
+               WHERE a.serviceProvider.id = :userID
+                 AND a.availableDate = :requestedDate
+                 AND a.startTime <= :requestedStart
+                 AND a.endTime >= :requestedEnd
+               ORDER BY a.startTime ASC
+               """,
+                Availability.class
+        );
+
+        query.setParameter("userID", userID);
+        query.setParameter("requestedDate", requestedDate);
+        query.setParameter("requestedStart", requestedStart);
+        query.setParameter("requestedEnd", requestedEnd);
+
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        return query.getResultList();
+    }
 }

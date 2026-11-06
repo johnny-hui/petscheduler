@@ -42,7 +42,6 @@ public class TimezoneUtil
     public static LocalDate getCurrentDate(final ZoneId timezone,
                                            final Clock clock)
     {
-
         return LocalDate.now(clock.withZone(timezone));
     }
 

@@ -51,6 +51,21 @@ public class GlobalExceptionHandler
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(InvalidUserRoleException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidUserRoleException(final InvalidUserRoleException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ErrorCode.INVALID_USER_ROLE,
+                ERROR_TITLE_INVALID_ROLE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
+
     @ExceptionHandler(AvailabilityNotFound.class)
     public ResponseEntity<ErrorResponse> handleAvailabilityNotFoundException(final AvailabilityNotFound ex)
     {

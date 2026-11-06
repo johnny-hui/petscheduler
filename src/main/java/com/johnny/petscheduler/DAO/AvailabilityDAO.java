@@ -17,6 +17,17 @@ public interface AvailabilityDAO
     List<Availability> getAllAvailabilitiesByUserID(final long userID);
     List<Availability> getUpcomingAvailabilities(final Long userID, final LocalDate today, final LocalTime now);
     List<Availability> getPastAvailabilities(final Long userID, final LocalDate today, final LocalTime now);
+    List<Availability> getAvailabilitiesByDateAndTime(final LocalDate requestedDate,
+                                                      final LocalTime requestedStart,
+                                                      final LocalTime requestedEnd,
+                                                      final int page,
+                                                      final int size);
+    List<Availability> getAvailabilitiesByDateAndTime(final Long userID,
+                                                      final LocalDate requestedDate,
+                                                      final LocalTime requestedStart,
+                                                      final LocalTime requestedEnd,
+                                                      final int page,
+                                                      final int size);
 
     // Update (PUT)
     Availability update(final Availability availability);

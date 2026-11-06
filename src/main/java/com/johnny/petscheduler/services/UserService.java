@@ -49,10 +49,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserProfileDTO getUserProfile(final long id)
     {
-        User user = userDAO.getUserById(id);
-        if(user == null) {
-            throw new UserNotFoundException(ERROR_MESSAGE_GENERAL_USER_NOT_FOUND);
-        }
+        User user = userDAO.getUserById(id)
+                .orElseThrow(
+                        () -> new UserNotFoundException(ERROR_MESSAGE_GENERAL_USER_NOT_FOUND)
+                );
         return createProfileDTO(user);
     }
 

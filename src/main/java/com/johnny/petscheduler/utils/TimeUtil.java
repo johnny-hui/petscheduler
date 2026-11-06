@@ -2,10 +2,7 @@ package com.johnny.petscheduler.utils;
 
 import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateException;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 
 /**
  * This utility class provides functions that validates time.
@@ -43,7 +40,10 @@ public final class TimeUtil
      * Checks whether the provided startTime is in the future when the
      * current date is today.
      *
-     * @param date
+     * @param clock
+     *      The application clock
+     *
+     * @param requestedDate
      *      A LocalDate object
      *
      * @param startTime
@@ -55,13 +55,15 @@ public final class TimeUtil
      * @throws InvalidAvailabilityDateException
      *      Thrown if start time is not in the future.
      */
-    public static void validateStartTimeInFutureIfToday(final LocalDate date,
+    public static void validateStartTimeInFutureIfToday(final String timezone,
+                                                        final LocalDate requestedDate,
                                                         final LocalTime startTime,
+                                                        final Clock clock,
                                                         final RuntimeException exception)
     {
-        Clock clock = Clock.systemDefaultZone();  // gets current time when called
-        LocalDate today = LocalDate.now(clock);
-        if(date.isEqual(today) && !startTime.isAfter(LocalTime.now(clock))) {
+        LocalDate today = TimezoneUtil.getCurrentDate(ZoneId.of(timezone), clock);
+        LocalTime now = TimezoneUtil.getCurrentTime(ZoneId.of(timezone), clock);
+        if(requestedDate.isEqual(today) && !startTime.isAfter(now)) {
             throw exception;
         }
     }
@@ -89,19 +91,21 @@ public final class TimeUtil
 
     /**
      * Checks if an Availability's date chosen is valid. A date is considered
-     * valid if it is not in the past.
+     * valid if it is not in the past and is within the user's timezone.
      *
      * @throws InvalidAvailabilityDateException
      *      Thrown if the Availability is set in a past date from current date.
      *
-     * @param availableDate
+     * @param requestedDate
      *      A LocalDate object representing the chosen date for availability
      */
-    public static void validateAvailableDateNotInPast(final LocalDate availableDate,
+    public static void validateAvailableDateNotInPast(final String timezone,
+                                                      final LocalDate requestedDate,
+                                                      final Clock clock,
                                                       final RuntimeException exception)
     {
-        LocalDate today = LocalDate.now();
-        if(availableDate.isBefore(today)) {
+        LocalDate today = TimezoneUtil.getCurrentDate(ZoneId.of(timezone), clock);
+        if(requestedDate.isBefore(today)) {
             throw exception;
         }
     }
@@ -137,21 +141,22 @@ public final class TimeUtil
      *      This is to prevent a service provider from being able to
      *      create Availabilities that are too far in the future
      *
-     * @param availableDate
+     * @param requestedDate
      *      A LocalDate object containing the chosen date for availability
      *
      * @param availabilityLimitDays
      *      An integer for the max limit of days
      */
-    public static void validateWithinMaxFutureDate(final LocalDate availableDate,
+    public static void validateWithinMaxFutureDate(final String timezone,
+                                                   final LocalDate requestedDate,
                                                    final int availabilityLimitDays,
+                                                   final Clock clock,
                                                    final RuntimeException exception)
     {
-        Clock clock = Clock.systemDefaultZone();
-        LocalDate today = LocalDate.now(clock);
+        LocalDate today = TimezoneUtil.getCurrentDate(ZoneId.of(timezone), clock);
         LocalDate maxDate = today.plusDays(availabilityLimitDays);
 
-        if(availableDate.isAfter(maxDate)) {
+        if(requestedDate.isAfter(maxDate)) {
             throw exception;
         }
     }

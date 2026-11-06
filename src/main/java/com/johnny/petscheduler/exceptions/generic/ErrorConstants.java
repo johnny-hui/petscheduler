@@ -20,6 +20,7 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_PET_DELETE = "DELETE PET ERROR: ";
     public static final String ERROR_TITLE_PET_CREATE = "CREATE PET ERROR: ";
     public static final String ERROR_TITLE_USER_PROFILE_ERROR = "User Profile Error: ";
+    public static final String ERROR_TITLE_INVALID_ROLE = "Invalid User Role";
 
     public static final String ERROR_MESSAGE_BAD_VALIDATION = "One or more fields provided has failed validation.";
     public static final String ERROR_MESSAGE_USER_NOT_FOUND = "User with the provided email does not exist!";
@@ -51,4 +52,7 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_AVAILABILITY_OVERLAP = "One or more requested availabilities for creation are overlapping with an existing availability!";
     public static final String ERROR_MESSAGE_MAX_BULK_AVAILABILITY_CREATE_LIMIT = "A maximum of 5 availabilities are allowed per bulk creation request";
     public static final String ERROR_MESSAGE_AVAILABILITY_NOT_FOUND = "The requested availability does not exist!";
+    public static final String ERROR_MESSAGE_USER_NOT_PROVIDER = "The requested user is not a service provider!";
+    public static final String ERROR_MESSAGE_QUERY_DATE_IN_PAST = "The provided query date cannot be in the past!";
+    public static final String ERROR_MESSAGE_QUERY_START_AFTER_END = "The provided query start time must be before end time!";
 }

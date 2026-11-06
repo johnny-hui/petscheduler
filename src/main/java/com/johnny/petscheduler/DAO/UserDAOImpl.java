@@ -1,13 +1,12 @@
 package com.johnny.petscheduler.DAO;
 
 import com.johnny.petscheduler.entities.users.User;
-
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
@@ -31,19 +30,18 @@ public class UserDAOImpl implements UserDAO {
      * @param email
      *      A String representing the email address of the user
      *
-     * @return User
+     * @return <code>User</code>
      *      Any sub-class of the User object
      */
     @Override
-    public User getUserByEmail(final String email) {
-        try {
-            return em.createQuery(
-                    "SELECT u FROM User u WHERE u.email = :email", User.class)
-                    .setParameter("email", email)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+    public Optional<User> getUserByEmail(final String email) {
+        return em.createQuery(
+                "SELECT u FROM User u WHERE u.email = :email",
+                        User.class
+                )
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst();
     }
 
     /**
@@ -52,19 +50,14 @@ public class UserDAOImpl implements UserDAO {
      * @param id
      *      A Long for the id of the user
      *
-     * @return User
+     * @return <code>User</code>
      *      Any sub-class of the User object
      */
     @Override
-    public User getUserById(final Long id) {
-        try {
-            return em.createQuery(
-                            "SELECT u FROM User u WHERE u.id = :id", User.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+    public Optional<User> getUserById(final Long id) {
+        return Optional.ofNullable(
+                em.find(User.class, id)
+        );
     }
 
 

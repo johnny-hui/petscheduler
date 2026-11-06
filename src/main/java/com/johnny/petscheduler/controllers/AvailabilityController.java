@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMPTY_AVAILABILITY;
@@ -97,6 +99,45 @@ public class AvailabilityController
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    /**
+     * Queries and returns a List of Availabilities based on the user's
+     * timezone and search preference.
+     *
+     * @implNote <code>API Example</code>
+     *      GET /api/availabilities/search?date=2026-11-10&startTime=09:00&endTime=12:00&page=0&size=20
+     *
+     * @param date
+     *      A LocalDate object
+     *
+     * @param startTime
+     *      A LocalTime object
+     *
+     * @param endTime
+     *      A LocalTime object
+     *
+     * @param authentication
+     *      An authenticated user object
+     *
+     * @return <code>List of AvailabilityResponseDTO</code>
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<AvailabilityResponseDTO>> searchAvailabilitiesByQuery(
+            @RequestParam final LocalDate date,
+            @RequestParam final LocalTime startTime,
+            @RequestParam final LocalTime endTime,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "20") final int size,
+            final Authentication authentication)
+    {
+        List<AvailabilityResponseDTO> availabilities = availabilityService
+                .getAvailabilitiesByQuery(
+                        date, startTime, endTime,
+                        page, size, authentication
+                );
+
+        return ResponseEntity.ok(availabilities);
     }
 
     // Update (PUT)
