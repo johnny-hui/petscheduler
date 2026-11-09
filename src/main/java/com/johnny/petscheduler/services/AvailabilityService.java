@@ -86,33 +86,27 @@ public class AvailabilityService
      * @return <code>A List of Availabilities</code>
      */
     @Transactional(readOnly = true)
-    public List<AvailabilityResponseDTO> getOwnAvailabilities(final Authentication authentication)
+    public List<AvailabilityResponseDTO> getAvailabilities(final Long userID,
+                                                           final Authentication authentication)
     {
-        // Get User object after passing Spring Authentication
-        User user = (User) authentication.getPrincipal();
+        User user = getUserContext(userID, authentication);
 
-        // Get all upcoming availabilities from DB (within user's timezone)
-        if(user instanceof PetSitter || user instanceof PetBusiness)
-        {
-            return generatePastOrCurrentAvailabilities(user, CURRENT);
-        }
-        throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
-    }
-
-
-
-    @Transactional(readOnly = true)
-    public List<AvailabilityResponseDTO> getUserAvailabilities(final Long userID)
-    {
-        // Ensure the requested provider exists
-        User user = userDAO.getUserById(userID)
-                .orElseThrow(
-                        () -> new UserNotFoundException(ERROR_MESSAGE_GENERAL_USER_NOT_FOUND)
-                );
-
-        // Get all upcoming availabilities from DB (within user's timezone)
+        // Get all current & upcoming availabilities from DB (within user's timezone)
         if(user instanceof PetSitter || user instanceof PetBusiness) {
             return generatePastOrCurrentAvailabilities(user, CURRENT);
+        }
+        throw new InvalidUserRoleException(ERROR_MESSAGE_USER_NOT_PROVIDER);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AvailabilityResponseDTO> getPreviousAvailabilities(final Long userID,
+                                                                   final Authentication authentication)
+    {
+        User user = getUserContext(userID, authentication);
+
+        // Get all previous availabilities from DB (within user's timezone)
+        if(user instanceof PetSitter || user instanceof PetBusiness) {
+            return generatePastOrCurrentAvailabilities(user, PAST);
         }
         throw new InvalidUserRoleException(ERROR_MESSAGE_USER_NOT_PROVIDER);
     }
@@ -130,10 +124,8 @@ public class AvailabilityService
             );
         }
 
-        // Get User from Authentication object (for timezone)
-        User user = (User) authentication.getPrincipal();
-
         // Validate the Query
+        User user = (User) authentication.getPrincipal();
         validateQuery(
                 user.getTimezone(), requestedDate, startTime,
                 endTime, clock, page, size
@@ -185,7 +177,6 @@ public class AvailabilityService
         throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
     }
 
-
     // Update (PUT)
     @Transactional
     public AvailabilityResponseDTO updateAvailability(final AvailabilityRequestDTO request,
@@ -209,6 +200,18 @@ public class AvailabilityService
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    private User getUserContext(final Long userID,
+                                final Authentication authentication)
+    {
+        if(authentication != null) {
+            return (User) authentication.getPrincipal();
+        } else {
+            return userDAO.getUserById(userID).orElseThrow(
+                    () -> new UserNotFoundException(ERROR_MESSAGE_GENERAL_USER_NOT_FOUND)
+            );
+        }
+    }
+
     private Availability validateOverlapAndPersistAvailability(final User user,
                                                                final AvailabilityRequestDTO request)
     {
@@ -226,30 +229,29 @@ public class AvailabilityService
     private List<AvailabilityResponseDTO> generatePastOrCurrentAvailabilities(final User user,
                                                                               final String time)
     {
-        List<AvailabilityResponseDTO> response = null;
-
+        ZoneId userZone = ZoneId.of(user.getTimezone());
         switch(time)
         {
             case PAST -> {
-                ZoneId userZone = ZoneId.of(user.getTimezone());
                 List<Availability> results = availabilityDAO.getPastAvailabilities(
                         user.getId(),
                         TimezoneUtil.getCurrentDate(userZone, clock),  // today
                         TimezoneUtil.getCurrentTime(userZone, clock)   // now
                 );
-                response = AvailabilityUtil.generateResponse(results);
+                return AvailabilityUtil.generateResponse(results);
             }
             case CURRENT -> {
-                ZoneId userZone = ZoneId.of(user.getTimezone());
                 List<Availability> results = availabilityDAO.getUpcomingAvailabilities(
                         user.getId(),
                         TimezoneUtil.getCurrentDate(userZone, clock),  // today
                         TimezoneUtil.getCurrentTime(userZone, clock)   // now
                 );
-                response = AvailabilityUtil.generateResponse(results);
+                return AvailabilityUtil.generateResponse(results);
+            }
+            default -> {
+                return new ArrayList<>();
             }
         }
-        return response;
     }
 
     private void validateQuery(final String timezone,

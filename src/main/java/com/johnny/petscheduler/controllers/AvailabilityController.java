@@ -70,37 +70,63 @@ public class AvailabilityController
     @GetMapping("/me")
     public ResponseEntity<List<AvailabilityResponseDTO>> getOwnAvailabilities(final Authentication authentication)
     {
-         List<AvailabilityResponseDTO> response = availabilityService.getOwnAvailabilities(authentication);
+         List<AvailabilityResponseDTO> response = availabilityService.getAvailabilities(
+                 null, authentication
+         );
          return ResponseEntity
                  .status(HttpStatus.OK)
                  .body(response);
     }
 
-    @GetMapping("/me/history")
-    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousOwnAvailabilities(final Authentication authentication)
-    {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
-    }
-
     @GetMapping("/user/{userID}")
     public ResponseEntity<List<AvailabilityResponseDTO>> getUserAvailabilities(@PathVariable final Long userID)
     {
-        List<AvailabilityResponseDTO> response = availabilityService.getUserAvailabilities(userID);
+        List<AvailabilityResponseDTO> response = availabilityService.getAvailabilities(
+                userID, null
+        );
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
     }
 
+    /**
+     * Retrieves a list of own past availabilities.
+     *
+     * @param authentication
+     *      An Authenticated User object
+     *
+     * @return <code>List of Own Past Availabilities</code>
+     */
+    @GetMapping("/me/history")
+    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousOwnAvailabilities(final Authentication authentication)
+    {
+        List<AvailabilityResponseDTO> response = availabilityService.getPreviousAvailabilities(
+                null, authentication
+        );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    /**
+     * Retrieves a list of a provider's (PetSitter/PetBusiness) past availabilities.
+     *
+     * @param userID
+     *      A Long for the user's ID
+     *
+     * @return <code>List of the Provider's Past Availabilities</code>
+     */
     @GetMapping("/user/{userID}/history")
     public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousUserAvailabilities(@PathVariable final Long userID)
     {
+        List<AvailabilityResponseDTO> response = availabilityService
+                .getPreviousAvailabilities(
+                        userID, null
+                );
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
     }
-
     /**
      * Queries and returns a List of Availabilities based on the user's
      * timezone and search preference.
@@ -142,7 +168,7 @@ public class AvailabilityController
 
     // Update (PUT)
     // NOTE: Should only be able to update any availabilities from the current date
-    // NOTE: Should only be able to update ^^ if there are no active and REQUESTED bookings within window
+    // NOTE: Should only be able to update ^^ if there are currently no active and REQUESTED bookings within window
     // NOTE: Should only be able to update the start and end times for a specific date
     @PutMapping
     public ResponseEntity<AvailabilityResponseDTO> updateAvailability(@Valid @RequestBody
