@@ -5,7 +5,6 @@ import com.johnny.petscheduler.DTO.availabilities.AvailabilityResponseDTO;
 import com.johnny.petscheduler.services.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -127,6 +126,7 @@ public class AvailabilityController
                 .status(HttpStatus.OK)
                 .body(response);
     }
+
     /**
      * Queries and returns a List of Availabilities based on the user's
      * timezone and search preference.
@@ -167,15 +167,16 @@ public class AvailabilityController
     }
 
     // Update (PUT)
-    // NOTE: Should only be able to update any availabilities from the current date
-    // NOTE: Should only be able to update ^^ if there are currently no active and REQUESTED bookings within window
-    // NOTE: Should only be able to update the start and end times for a specific date
-    @PutMapping
-    public ResponseEntity<AvailabilityResponseDTO> updateAvailability(@Valid @RequestBody
+    @PutMapping("/{availabilityID}")
+    public ResponseEntity<AvailabilityResponseDTO> updateAvailability(@PathVariable
+                                                                      final Long availabilityID,
+                                                                      @Valid @RequestBody
                                                                       final AvailabilityRequestDTO request,
                                                                       final Authentication authentication)
     {
-        AvailabilityResponseDTO response = availabilityService.updateAvailability(request, authentication);
+        AvailabilityResponseDTO response = availabilityService.updateAvailability(
+                availabilityID, request, authentication
+        );
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -190,14 +191,5 @@ public class AvailabilityController
                                                    final Authentication authentication)
     {
         return availabilityService.deleteAvailability(availabilityID, authentication);
-    }
-
-    @DeleteMapping("/bulk")
-    public ResponseEntity<Void> deleteAvailabilities(
-            @Valid @RequestBody @NotEmpty(message = ERROR_MESSAGE_EMPTY_AVAILABILITY)
-            final List<@NotNull Long> availabilityIDList,
-            final Authentication authentication)
-    {
-        return availabilityService.deleteAvailabilitiesInBulk(availabilityIDList, authentication);
     }
 }

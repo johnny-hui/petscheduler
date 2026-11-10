@@ -1,6 +1,7 @@
 package com.johnny.petscheduler.services;
 
 import com.johnny.petscheduler.DAO.AvailabilityDAO;
+import com.johnny.petscheduler.DAO.BookingDAO;
 import com.johnny.petscheduler.DAO.UserDAO;
 import com.johnny.petscheduler.DTO.availabilities.AvailabilityRequestDTO;
 import com.johnny.petscheduler.DTO.availabilities.AvailabilityResponseDTO;
@@ -10,10 +11,7 @@ import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
 import com.johnny.petscheduler.exceptions.InvalidUserRoleException;
 import com.johnny.petscheduler.exceptions.UserNotFoundException;
-import com.johnny.petscheduler.exceptions.availability.AvailabilityNotFound;
-import com.johnny.petscheduler.exceptions.availability.AvailabilityOverlapException;
-import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateException;
-import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityTimeException;
+import com.johnny.petscheduler.exceptions.availability.*;
 import com.johnny.petscheduler.utils.AvailabilityUtil;
 import com.johnny.petscheduler.utils.TimezoneUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +41,18 @@ public class AvailabilityService
     private static final int QUERY_PAGE_SIZE_MAX = 100;
 
     private final AvailabilityDAO availabilityDAO;
+    private final BookingDAO bookingDAO;
     private final UserDAO userDAO;
     private final Clock clock;
 
     @Autowired
     public AvailabilityService(final AvailabilityDAO availabilityDAO,
+                               final BookingDAO bookingDAO,
                                final UserDAO userDAO,
                                final Clock clock)
     {
         this.availabilityDAO = availabilityDAO;
+        this.bookingDAO = bookingDAO;
         this.userDAO = userDAO;
         this.clock = clock;
     }
@@ -118,12 +119,6 @@ public class AvailabilityService
                                                                   final int page, final int size,
                                                                   final Authentication authentication)
     {
-        if (requestedDate == null || startTime == null || endTime == null) {
-            throw new IllegalArgumentException(
-                    "Date, start time, and end time are required."
-            );
-        }
-
         // Validate the Query
         User user = (User) authentication.getPrincipal();
         validateQuery(
@@ -149,7 +144,7 @@ public class AvailabilityService
 
         // Perform user role check and validate the Availability request
         if (user instanceof PetSitter || user instanceof PetBusiness) {
-            AvailabilityUtil.validateAvailability(user, request, clock);
+            AvailabilityUtil.validateAvailabilityRequest(user, request, clock);
             Availability availability = validateOverlapAndPersistAvailability(user, request);
             return AvailabilityUtil.generateResponse(availability);
         }
@@ -168,7 +163,7 @@ public class AvailabilityService
             List<AvailabilityResponseDTO> availabilities = new ArrayList<>();
 
             for (final AvailabilityRequestDTO request : requests) {
-                AvailabilityUtil.validateAvailability(user, request, clock);
+                AvailabilityUtil.validateAvailabilityRequest(user, request, clock);
                 Availability availability = validateOverlapAndPersistAvailability(user, request);
                 availabilities.add(AvailabilityUtil.generateResponse(availability));
             }
@@ -179,10 +174,40 @@ public class AvailabilityService
 
     // Update (PUT)
     @Transactional
-    public AvailabilityResponseDTO updateAvailability(final AvailabilityRequestDTO request,
+    public AvailabilityResponseDTO updateAvailability(final Long availabilityID,
+                                                      final AvailabilityRequestDTO request,
                                                       final Authentication authentication)
     {
-        return null;
+        User user = (User) authentication.getPrincipal();
+
+        if (user instanceof PetSitter || user instanceof PetBusiness) {
+            // Constraint 1: Verify the existence of the Availability and ownership
+            Availability availability = availabilityDAO
+                    .getAvailabilityByIdAndProviderId(availabilityID, user.getId())
+                    .orElseThrow(() -> new AvailabilityNotFound(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
+
+            // Constraint 2: Check if anything is changing b/w request and the availability
+            if(AvailabilityUtil.hasChanged(availability, request)) {
+                return AvailabilityUtil.generateResponse(availability);
+            }
+
+            // Constraint 3: Perform request validation
+            AvailabilityUtil.validateAvailabilityRequest(user, request, clock);
+
+            // Constraint 4: Check for existing bookings in current availability's window (Reject REQUESTED && CONFIRMED ones)
+            if(!bookingDAO.anyActiveBookings(
+                    user.getId(),
+                    availability.getAvailableDate(),
+                    availability.getStartTime(),
+                    availability.getEndTime()))
+            {
+                // Constraint 5: Check for overlaps and perform update
+                validateOverlapAndUpdateAvailability(user, request, availability);
+                return AvailabilityUtil.generateResponse(availability);
+            }
+            throw new AvailabilityBookingConflictException(ERROR_MESSAGE_UPDATE_AVAILABILITY_BOOKING_CONFLICT);
+        }
+        throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
     }
 
     // Delete (DELETE)
@@ -193,13 +218,7 @@ public class AvailabilityService
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Transactional
-    public ResponseEntity<Void> deleteAvailabilitiesInBulk(final List<Long> requests,
-                                                           final Authentication authentication)
-    {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
+    // Helper methods
     private User getUserContext(final Long userID,
                                 final Authentication authentication)
     {
@@ -212,18 +231,40 @@ public class AvailabilityService
         }
     }
 
+    private void validateOverlapAndUpdateAvailability(final User user,
+                                                      final AvailabilityRequestDTO request,
+                                                      Availability availability)
+    {
+        if(!availabilityDAO.isAvailabilityOverlapping(
+                availability.getId(),
+                user.getId(),
+                request.availableDate(),
+                request.startTime(),
+                request.endTime()))
+        {
+            availability.setAvailableDate(request.availableDate());
+            availability.setStartTime(request.startTime());
+            availability.setEndTime(request.endTime());
+        }
+        throw new AvailabilityOverlapException(ERROR_MESSAGE_UPDATE_AVAILABILITY_OVERLAP);
+    }
+
     private Availability validateOverlapAndPersistAvailability(final User user,
                                                                final AvailabilityRequestDTO request)
     {
-        if(!availabilityDAO.isAvailabilityOverlapping(user.getId(), request.availableDate(),
-                                                      request.startTime(), request.endTime()))
+        if(!availabilityDAO.isAvailabilityOverlapping(
+                null,
+                user.getId(),
+                request.availableDate(),
+                request.startTime(),
+                request.endTime()))
         {
             Availability availability = new Availability();
             AvailabilityUtil.setAvailabilityInfo(user, request, availability);
             availabilityDAO.create(availability);
             return availability;
         }
-        throw new AvailabilityOverlapException(ERROR_MESSAGE_AVAILABILITY_OVERLAP);
+        throw new AvailabilityOverlapException("CREATE AVAILABILITY ERROR: " + ERROR_MESSAGE_AVAILABILITY_OVERLAP);
     }
 
     private List<AvailabilityResponseDTO> generatePastOrCurrentAvailabilities(final User user,
@@ -262,6 +303,12 @@ public class AvailabilityService
                                final int page,
                                final int size)
     {
+        if (date == null || startTime == null || endTime == null) {
+            throw new IllegalArgumentException(
+                    "Date, start time, and end time are required."
+            );
+        }
+
         if (page < 0) {
             throw new IllegalArgumentException("Page number cannot be negative.");
         }

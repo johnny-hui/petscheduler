@@ -1,10 +1,7 @@
 package com.johnny.petscheduler.exceptions.handlers;
 
 import com.johnny.petscheduler.exceptions.*;
-import com.johnny.petscheduler.exceptions.availability.AvailabilityNotFound;
-import com.johnny.petscheduler.exceptions.availability.AvailabilityOverlapException;
-import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityDateException;
-import com.johnny.petscheduler.exceptions.availability.InvalidAvailabilityTimeException;
+import com.johnny.petscheduler.exceptions.availability.*;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
 import com.johnny.petscheduler.utils.ValidationUtil;
@@ -44,6 +41,21 @@ public class GlobalExceptionHandler
                 HttpStatus.CONFLICT.value(),
                 ErrorCode.AVAILABILITY_CONFLICT,
                 ERROR_TITLE_AVAILABILITY_CONFLICT,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AvailabilityBookingConflictException.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityBookingConflictException(
+            final AvailabilityBookingConflictException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ErrorCode.AVAILABILITY_BOOKING_CONFLICT,
+                ERROR_TITLE_UPDATE_AVAILABILITY_BOOKING_CONFLICT,
                 ex.getMessage(),
                 null,
                 Instant.now()

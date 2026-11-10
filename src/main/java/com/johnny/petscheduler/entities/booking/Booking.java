@@ -10,7 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(
@@ -39,15 +40,18 @@ public class Booking
     @JoinColumn(name = "provider_id", nullable = false)
     private User serviceProvider;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "service_id", nullable = false)
-    private ServiceOffering service;
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "service_id", nullable = false)
+//    private ServiceOffering service;
+
+    @Column(name = "booking_date", nullable = false)
+    private LocalDate bookingDate;
 
     @Column(name = "start_at", nullable = false)
-    private LocalDateTime startAt;
+    private LocalTime startTime;
 
     @Column(name = "end_at", nullable = false)
-    private LocalDateTime endAt;
+    private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

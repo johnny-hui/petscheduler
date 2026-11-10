@@ -61,6 +61,36 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
         return query.getResultStream().findFirst();
     }
 
+
+    /**
+     * Optionally returns an Availability based on its ID and
+     * the user's ID.
+     *
+     * @param availabilityID
+     *      A Long for the specific availability's ID
+     *
+     * @param userID
+     *      A Long for the user's ID
+     *
+     * @return <code>Optional</code>
+     */
+    @Override
+    public Optional<Availability> getAvailabilityByIdAndProviderId(final Long availabilityID,
+                                                                   final Long userID)
+    {
+        TypedQuery<Availability> query = em.createQuery(
+        """
+        SELECT a
+        FROM Availability a
+        WHERE a.id = :availabilityId
+        AND a.serviceProvider.id = :userID
+        """, Availability.class);
+
+        query.setParameter("availabilityId", availabilityID);
+        query.setParameter("userID", userID);
+        return query.getResultStream().findFirst();
+    }
+
     /**
      * Returns all availabilities for a specific user based on userID.
      *
@@ -97,49 +127,6 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
     @Override
     public Availability update(final Availability availability) {
         return em.merge(availability);
-    }
-
-    /**
-     * Checks whether the requested Availability overlaps with any existing
-     * Availability in the database.
-     *
-     * @param userID
-     *      A Long for the user ID
-     *
-     * @param requestedDate
-     *      A LocalDate object for the requested date
-     *
-     * @param requestedStartTime
-     *      A LocalTime object for the requested start time
-     *
-     * @param requestedEndTime
-     *      A LocalTime object for the requested end time
-     *
-     * @return <code>bool(T/F)</code>
-     *      True if overlapping, False otherwise
-     */
-    @Override
-    public boolean isAvailabilityOverlapping(final Long userID,
-                                             final LocalDate requestedDate,
-                                             final LocalTime requestedStartTime,
-                                             final LocalTime requestedEndTime)
-    {
-        TypedQuery<Long> query = em.createQuery("""
-                SELECT a.id
-                FROM Availability a
-                WHERE a.serviceProvider.id = :userID
-                  AND a.availableDate = :date
-                  AND a.startTime < :endTime
-                  AND a.endTime > :startTime
-        """, Long.class);
-
-        query.setParameter("userID", userID);
-        query.setParameter("date", requestedDate);
-        query.setParameter("startTime", requestedStartTime);
-        query.setParameter("endTime", requestedEndTime);
-
-        query.setMaxResults(1);
-        return query.getResultList().isEmpty() ? false : true;
     }
 
     /**
@@ -329,5 +316,55 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
         query.setMaxResults(size);
 
         return query.getResultList();
+    }
+
+    /**
+     * Checks whether the requested Availability overlaps with any existing
+     * Availability in the database.
+     *
+     * @param userID
+     *      A Long for the user ID
+     *
+     * @param availabilityID
+     *      A Long for a specific Availability's ID
+     *
+     * @param requestedDate
+     *      A LocalDate object for the requested date
+     *
+     * @param requestedStartTime
+     *      A LocalTime object for the requested start time
+     *
+     * @param requestedEndTime
+     *      A LocalTime object for the requested end time
+     *
+     * @return <code>bool(T/F)</code>
+     *      True if overlapping, False otherwise
+     */
+    @Override
+    public boolean isAvailabilityOverlapping(final Long userID,
+                                             final Long availabilityID,
+                                             final LocalDate requestedDate,
+                                             final LocalTime requestedStartTime,
+                                             final LocalTime requestedEndTime)
+    {
+        TypedQuery<Long> query = em.createQuery("""
+            SELECT a.id
+            FROM Availability a
+            WHERE a.serviceProvider.id = :userID
+              AND a.availableDate = :date
+              AND a.startTime < :endTime
+              AND a.endTime > :startTime
+              AND (:availabilityID IS NULL
+                   OR a.id <> :availabilityID)
+            """, Long.class);
+
+        query.setParameter("availabilityID", availabilityID);
+        query.setParameter("userID", userID);
+        query.setParameter("date", requestedDate);
+        query.setParameter("startTime", requestedStartTime);
+        query.setParameter("endTime", requestedEndTime);
+
+        query.setMaxResults(1);
+        return query.getResultList().isEmpty() ? false : true;
     }
 }

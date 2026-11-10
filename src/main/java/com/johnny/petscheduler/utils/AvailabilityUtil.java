@@ -91,15 +91,39 @@ public final class AvailabilityUtil
     }
 
     /**
+     * Checks if there are any change(s) between an availability and an
+     * AvailabilityRequestDTO.
+     *
+     * @implNote <code>Update(PUT) only</code>
+     *      This is only used to perform checks before performing the update
+     *
+     * @param availability
+     *      An Availability object
+     *
+     * @param request
+     *      An AvailabilityRequestDTO object
+     *
+     * @return <code>bool(T/F)</code>
+     *      True if change is present, false otherwise
+     */
+    public static boolean hasChanged(final Availability availability,
+                                     final AvailabilityRequestDTO request)
+    {
+        return !availability.getAvailableDate().equals(request.availableDate()) ||
+               !availability.getStartTime().equals(request.startTime()) ||
+               !availability.getEndTime().equals(request.endTime());
+    }
+
+    /**
      * Performs a series of business validations on an Availability Request
-     * before creating and persisting it.
+     * before creating or updating it.
      *
      * @param request
      *      An AvailabilityRequestDTO object
      */
-    public static void validateAvailability(final User user,
-                                            final AvailabilityRequestDTO request,
-                                            final Clock clock)
+    public static void validateAvailabilityRequest(final User user,
+                                                   final AvailabilityRequestDTO request,
+                                                   final Clock clock)
             throws InvalidAvailabilityDateException, InvalidAvailabilityTimeException
     {
         // Constraint 1: Ensure the date is not in the past
