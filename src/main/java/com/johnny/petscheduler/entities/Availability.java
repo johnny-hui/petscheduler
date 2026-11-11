@@ -22,8 +22,8 @@ import java.time.LocalTime;
         name = "availability",
         indexes = {
                 @Index(
-                        name = "idx_availability_sitter_date",
-                        columnList = "sitter_id, available_date"
+                        name = "idx_availability_provider_date_start",
+                        columnList = "user_id, available_date, start_time"
                 )
         }
 )

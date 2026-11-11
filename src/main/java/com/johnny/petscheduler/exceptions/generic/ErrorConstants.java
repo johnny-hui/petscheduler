@@ -43,6 +43,7 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_INVALID_AVAILABILITY = "Invalid Availability Provided";
     public static final String ERROR_TITLE_UPDATE_AVAILABILITY_BOOKING_CONFLICT = "Update Availability Conflict Error (Active Bookings)";
     public static final String ERROR_TITLE_UPDATE_AVAILABILITY_OVERLAP_CONFLICT = "Update Availability Conflict Error (Overlap)";
+    public static final String ERROR_TITLE_DELETE_AVAILABILITY_BOOKING_CONFLICT = "Delete Availability Conflict Error (Active Bookings)";
     public static final String ERROR_MESSAGE_EMPTY_AVAILABILITY = "No availabilities were provided.";
     public static final String ERROR_MESSAGE_INVALID_AVAILABILITY_PAST = "Availability date cannot be in the past";
     public static final String ERROR_MESSAGE_AVAILABILITY_INVALID_START = "One or more availabilities have a start time that is later than or equal to the end time.";
@@ -59,4 +60,5 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_QUERY_START_AFTER_END = "The provided query start time must be before end time!";
     public static final String ERROR_MESSAGE_UPDATE_AVAILABILITY_BOOKING_CONFLICT = "Cannot update availability due to active bookings present (ACTIVE = Requested or Confirmed)";
     public static final String ERROR_MESSAGE_UPDATE_AVAILABILITY_OVERLAP = "Cannot update availability due to overlapping availabilities!";
+    public static final String ERROR_MESSAGE_DELETE_AVAILABILITY_BOOKING_CONFLICT = "Cannot delete availability due to active bookings present (ACTIVE = Requested or Confirmed)";
 }

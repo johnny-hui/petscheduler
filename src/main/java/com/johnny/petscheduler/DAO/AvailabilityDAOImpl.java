@@ -319,6 +319,18 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
     }
 
     /**
+     * Deletes an Availability from the DB.
+     *
+     * @param availability
+     *      An Availability object
+     */
+    @Override
+    public void delete(final Availability availability)
+    {
+        em.remove(availability);
+    }
+
+    /**
      * Checks whether the requested Availability overlaps with any existing
      * Availability in the database.
      *

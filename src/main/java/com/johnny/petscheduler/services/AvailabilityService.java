@@ -15,7 +15,6 @@ import com.johnny.petscheduler.exceptions.availability.*;
 import com.johnny.petscheduler.utils.AvailabilityUtil;
 import com.johnny.petscheduler.utils.TimezoneUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -194,8 +193,8 @@ public class AvailabilityService
             // Constraint 3: Perform request validation
             AvailabilityUtil.validateAvailabilityRequest(user, request, clock);
 
-            // Constraint 4: Check for existing bookings in current availability's window (Reject REQUESTED && CONFIRMED ones)
-            if(!bookingDAO.anyActiveBookings(
+            // Constraint 4: Check for existing bookings in current availability's window
+            if(!bookingDAO.anyActiveBookings(  // only status REQUESTED, CONFIRMED
                     user.getId(),
                     availability.getAvailableDate(),
                     availability.getStartTime(),
@@ -205,18 +204,43 @@ public class AvailabilityService
                 validateOverlapAndUpdateAvailability(user, request, availability);
                 return AvailabilityUtil.generateResponse(availability);
             }
-            throw new AvailabilityBookingConflictException(ERROR_MESSAGE_UPDATE_AVAILABILITY_BOOKING_CONFLICT);
+            throw new AvailabilityBookingConflictException(
+                    ERROR_MESSAGE_UPDATE_AVAILABILITY_BOOKING_CONFLICT
+            );
         }
         throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
     }
 
     // Delete (DELETE)
     @Transactional
-    public ResponseEntity<Void> deleteAvailability(final Long id,
+    public ResponseEntity<Void> deleteAvailability(final Long availabilityID,
                                                    final Authentication authentication)
     {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        User user = (User) authentication.getPrincipal();
+
+        if(user instanceof PetSitter || user instanceof PetBusiness) {
+            // 1. Verify the existence of the Availability and ownership
+            Availability availability = availabilityDAO
+                    .getAvailabilityByIdAndProviderId(availabilityID, user.getId())
+                    .orElseThrow(() -> new AvailabilityNotFound(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
+
+            // 2. Check for active bookings in the availability window
+            if(!bookingDAO.anyActiveBookings(
+                    user.getId(),
+                    availability.getAvailableDate(),
+                    availability.getStartTime(),
+                    availability.getEndTime()))
+            {
+                availabilityDAO.delete(availability);
+            }
+            throw new AvailabilityBookingConflictException(
+                    ERROR_MESSAGE_DELETE_AVAILABILITY_BOOKING_CONFLICT
+            );
+        }
+        throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
     }
+
+
 
     // Helper methods
     private User getUserContext(final Long userID,

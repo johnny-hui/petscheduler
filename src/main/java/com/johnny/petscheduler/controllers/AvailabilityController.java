@@ -5,6 +5,7 @@ import com.johnny.petscheduler.DTO.availabilities.AvailabilityResponseDTO;
 import com.johnny.petscheduler.services.AvailabilityService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +59,8 @@ public class AvailabilityController
 
     // Read (GET)
     @GetMapping("/{availabilityID}")
-    public ResponseEntity<AvailabilityResponseDTO> getAvailability(@PathVariable final Long availabilityID)
+    public ResponseEntity<AvailabilityResponseDTO> getAvailability(@PathVariable @Positive
+                                                                   final Long availabilityID)
     {
         AvailabilityResponseDTO response = availabilityService.getAvailability(availabilityID);
         return ResponseEntity
@@ -78,7 +80,8 @@ public class AvailabilityController
     }
 
     @GetMapping("/user/{userID}")
-    public ResponseEntity<List<AvailabilityResponseDTO>> getUserAvailabilities(@PathVariable final Long userID)
+    public ResponseEntity<List<AvailabilityResponseDTO>> getUserAvailabilities(@PathVariable @Positive
+                                                                               final Long userID)
     {
         List<AvailabilityResponseDTO> response = availabilityService.getAvailabilities(
                 userID, null
@@ -116,7 +119,8 @@ public class AvailabilityController
      * @return <code>List of the Provider's Past Availabilities</code>
      */
     @GetMapping("/user/{userID}/history")
-    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousUserAvailabilities(@PathVariable final Long userID)
+    public ResponseEntity<List<AvailabilityResponseDTO>> getPreviousUserAvailabilities(@PathVariable @Positive
+                                                                                       final Long userID)
     {
         List<AvailabilityResponseDTO> response = availabilityService
                 .getPreviousAvailabilities(
@@ -168,7 +172,7 @@ public class AvailabilityController
 
     // Update (PUT)
     @PutMapping("/{availabilityID}")
-    public ResponseEntity<AvailabilityResponseDTO> updateAvailability(@PathVariable
+    public ResponseEntity<AvailabilityResponseDTO> updateAvailability(@PathVariable @Positive
                                                                       final Long availabilityID,
                                                                       @Valid @RequestBody
                                                                       final AvailabilityRequestDTO request,
@@ -183,11 +187,9 @@ public class AvailabilityController
     }
 
     // Delete (DELETE)
-    // NOTE: Should only be able to delete any availabilities from the current date
-    // NOTE: Should only be able to delete ^^ if there are no active and REQUESTED bookings within window
-    // NOTE: Otherwise, user has to deal with any conflicts first
     @DeleteMapping("/{availabilityID}")
-    public ResponseEntity<Void> deleteAvailability(@PathVariable final Long availabilityID,
+    public ResponseEntity<Void> deleteAvailability(@PathVariable @Positive
+                                                   final Long availabilityID,
                                                    final Authentication authentication)
     {
         return availabilityService.deleteAvailability(availabilityID, authentication);

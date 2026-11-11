@@ -18,8 +18,8 @@ import java.time.LocalTime;
         name = "booking",
         indexes = {
                 @Index(
-                        name = "idx_booking_sitter_start",
-                        columnList = "sitter_id, start_at"
+                        name = "idx_booking_provider_date_start",
+                        columnList = "provider_id, booking_date, start_at"
                 )
         }
 )

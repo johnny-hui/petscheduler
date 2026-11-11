@@ -1,13 +1,15 @@
 package com.johnny.petscheduler.security.user;
 
 import com.johnny.petscheduler.DAO.UserDAO;
-import com.johnny.petscheduler.entities.users.User;
+import com.johnny.petscheduler.exceptions.UserNotFoundException;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_GENERAL_USER_NOT_FOUND;
 
 /**
  * This is a custom UserDetailsService wrapper class that tells Spring
@@ -26,10 +28,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override @NullMarked
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException
     {
-        User user = userDAO.getUserByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("[+] AUTHENTICATION ERROR: User not found");
-        }
-        return user;
+        return userDAO
+                .getUserByEmail(email)
+                .orElseThrow(
+                        () -> new UserNotFoundException(ERROR_MESSAGE_GENERAL_USER_NOT_FOUND)
+                );
     }
 }

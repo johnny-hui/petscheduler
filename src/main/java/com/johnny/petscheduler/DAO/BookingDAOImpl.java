@@ -24,6 +24,11 @@ public class BookingDAOImpl implements BookingDAO
      * Checks for any active Bookings within the provided date, start
      * and end times.
      *
+     * @implNote <code>Active Bookings</code>
+     *      They have the following statuses (REQUESTED,CONFIRMED)
+     *
+     * @see BookingStatus
+     *
      * @param userID
      *      A Long for the user ID
      *
