@@ -186,7 +186,7 @@ public class AvailabilityService
                     .orElseThrow(() -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
 
             // Constraint 2: Check if anything is changing b/w request and the availability
-            if(AvailabilityUtil.hasChanged(availability, request)) {
+            if(!AvailabilityUtil.hasChanged(availability, request)) {
                 return AvailabilityUtil.generateResponse(availability);
             }
 
