@@ -71,7 +71,7 @@ public class AvailabilityService
     {
         Availability availability = availabilityDAO.getAvailabilityById(availabilityID)
                 .orElseThrow(
-                        () -> new AvailabilityNotFound(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND)
+                        () -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND)
                 );
         return AvailabilityUtil.generateResponse(availability);
     }
@@ -183,7 +183,7 @@ public class AvailabilityService
             // Constraint 1: Verify the existence of the Availability and ownership
             Availability availability = availabilityDAO
                     .getAvailabilityByIdAndProviderId(availabilityID, user.getId())
-                    .orElseThrow(() -> new AvailabilityNotFound(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
+                    .orElseThrow(() -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
 
             // Constraint 2: Check if anything is changing b/w request and the availability
             if(AvailabilityUtil.hasChanged(availability, request)) {
@@ -222,7 +222,7 @@ public class AvailabilityService
             // 1. Verify the existence of the Availability and ownership
             Availability availability = availabilityDAO
                     .getAvailabilityByIdAndProviderId(availabilityID, user.getId())
-                    .orElseThrow(() -> new AvailabilityNotFound(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
+                    .orElseThrow(() -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
 
             // 2. Check for active bookings in the availability window
             if(!bookingDAO.anyActiveBookings(
@@ -232,6 +232,7 @@ public class AvailabilityService
                     availability.getEndTime()))
             {
                 availabilityDAO.delete(availability);
+                return ResponseEntity.ok().build();
             }
             throw new AvailabilityBookingConflictException(
                     ERROR_MESSAGE_DELETE_AVAILABILITY_BOOKING_CONFLICT

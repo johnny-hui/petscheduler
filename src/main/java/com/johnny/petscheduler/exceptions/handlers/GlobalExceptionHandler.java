@@ -78,8 +78,8 @@ public class GlobalExceptionHandler
     }
 
 
-    @ExceptionHandler(AvailabilityNotFound.class)
-    public ResponseEntity<ErrorResponse> handleAvailabilityNotFoundException(final AvailabilityNotFound ex)
+    @ExceptionHandler(AvailabilityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityNotFoundException(final AvailabilityNotFoundException ex)
     {
         ErrorResponse body = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
