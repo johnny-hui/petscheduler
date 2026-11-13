@@ -10,8 +10,11 @@ import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
+import com.johnny.petscheduler.exceptions.InvalidUserRoleException;
+import com.johnny.petscheduler.exceptions.UserNotFoundException;
 import com.johnny.petscheduler.exceptions.availability.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +26,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 
 import java.time.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +71,449 @@ class AvailabilityServiceTest
         availability.setAvailableDate(LocalDate.of(2026, 12, 10));
         availability.setStartTime(LocalTime.of(9, 0));
         availability.setEndTime(LocalTime.of(17, 0));
+    }
+
+    // GET Tests
+    @Test
+    void getAvailability_ExistingId_ReturnsResponseDTO() {
+        // Arrange
+        when(availabilityDAO.getAvailabilityById(10L))
+                .thenReturn(Optional.of(availability));
+
+        // Act
+        AvailabilityResponseDTO result =
+                availabilityService.getAvailability(10L);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(10L, result.id());
+        assertEquals(LocalDate.of(2026, 12, 10), result.availableDate());
+        assertEquals(LocalTime.of(9, 0), result.startTime());
+        assertEquals(LocalTime.of(17, 0), result.endTime());
+        verify(availabilityDAO).getAvailabilityById(10L);
+    }
+
+    @Test
+    void getAvailability_NonExistingId_ThrowsNotFoundException() {
+        // Arrange
+        when(availabilityDAO.getAvailabilityById(10L))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                AvailabilityNotFoundException.class,
+                () -> availabilityService.getAvailability(10L)
+        );
+        verify(availabilityDAO).getAvailabilityById(10L);
+    }
+
+    @Test
+    void getAvailabilities_AuthenticatedPetSitter_ReturnsOwnAvailabilities() {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+
+        when(availabilityDAO.getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        )).thenReturn(List.of(availability));
+
+        // Act
+        List<AvailabilityResponseDTO> result =
+                availabilityService.getAvailabilities(null, authentication);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(10L, result.getFirst().id());
+        verifyNoInteractions(userDAO);
+        verify(availabilityDAO).getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        );
+    }
+
+    @Test
+    void getAvailabilities_AuthenticatedPetBusiness_ReturnsOwnAvailabilities() {
+        // Arrange
+        user = new PetBusiness();
+        user.setId(1L);
+        user.setTimezone(TEST_TIMEZONE);
+        availability.setServiceProvider(user);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+
+        when(availabilityDAO.getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        )).thenReturn(List.of(availability));
+
+        // Act
+        List<AvailabilityResponseDTO> result =
+                availabilityService.getAvailabilities(
+                        null, authentication
+                );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(10L, result.getFirst().id());
+        verifyNoInteractions(userDAO);
+        verify(availabilityDAO).getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        );
+    }
+
+    @Test
+    void getAvailabilities_AuthenticatedPetOwner_ThrowsInvalidUserRoleException() {
+        // Arrange
+        user = new PetOwner();
+        user.setId(1L);
+        user.setTimezone(TEST_TIMEZONE);
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+
+        // Act & Assert
+        assertThrows(
+                InvalidUserRoleException.class,
+                () -> availabilityService.getAvailabilities(
+                        null, authentication
+                )
+        );
+        verifyNoInteractions(userDAO, availabilityDAO);
+    }
+
+    @Test
+    void getAvailabilities_ValidPublicRequest_ReturnsProviderAvailabilities() {
+        // Arrange
+        when(userDAO.getUserById(1L))
+                .thenReturn(Optional.of(user));
+
+        when(availabilityDAO.getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        )).thenReturn(List.of(availability));
+
+        // Act
+        List<AvailabilityResponseDTO> result =
+                availabilityService.getAvailabilities(1L, null);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(10L, result.getFirst().id());
+        verify(userDAO).getUserById(1L);
+        verify(availabilityDAO).getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        );
+    }
+
+    @Test
+    void getAvailabilities_PublicRequest_UserNotFound_ThrowsException() {
+        // Arrange
+        when(userDAO.getUserById(1L))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                UserNotFoundException.class,
+                () -> availabilityService.getAvailabilities(1L, null)
+        );
+        verify(userDAO).getUserById(1L);
+        verifyNoInteractions(availabilityDAO);
+    }
+
+    @Test
+    void getAvailabilities_PublicRequest_PetOwner_ThrowsInvalidUserRoleException() {
+        // Arrange
+        user = new PetOwner();
+        user.setId(1L);
+        user.setTimezone(TEST_TIMEZONE);
+
+        when(userDAO.getUserById(1L))
+                .thenReturn(Optional.of(user));
+
+        // Act & Assert
+        assertThrows(
+                InvalidUserRoleException.class,
+                () -> availabilityService.getAvailabilities(1L, null)
+        );
+        verify(userDAO).getUserById(1L);
+        verifyNoInteractions(availabilityDAO);
+    }
+
+    @Test
+    void getAvailabilities_NoUpcomingAvailabilities_ReturnsEmptyList() {
+        // Arrange
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+
+        when(availabilityDAO.getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        )).thenReturn(Collections.emptyList());
+
+        // Act
+        List<AvailabilityResponseDTO> result =
+                availabilityService.getAvailabilities(
+                        null, authentication
+                );
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(availabilityDAO).getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        );
+    }
+
+    @Test
+    void getAvailabilities_UserInDifferentTimezone_UsesLocalDateTime() {
+        // Arrange
+        setTestClock(
+                "America/Vancouver",  // December 1 at 10:00 in Vancouver
+                LocalDate.of(2026, 12, 1),
+                LocalTime.of(10, 0)
+        );
+
+        // Same instant is December 2 at 03:00 in Tokyo
+        user.setTimezone("Asia/Tokyo");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal())
+                .thenReturn(user);
+
+        when(availabilityDAO.getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 2),
+                LocalTime.of(3, 0)
+        )).thenReturn(Collections.emptyList());
+
+        // Act
+        List<AvailabilityResponseDTO> result =
+                availabilityService.getAvailabilities(
+                        null, authentication
+                );
+
+        // Assert
+        assertTrue(result.isEmpty());
+        verify(availabilityDAO).getUpcomingAvailabilities(
+                1L,
+                LocalDate.of(2026, 12, 2),
+                LocalTime.of(3, 0)
+        );
+    }
+
+    @Nested
+    class GetPreviousAvailabilitiesTests {
+        @Test
+        void getPreviousAvailabilities_AuthenticatedPetSitter_ReturnsPastAvailabilities() {
+            // Arrange
+            availability.setAvailableDate(LocalDate.of(2026, 11, 30));
+            Authentication authentication = mock(Authentication.class);
+            when(authentication.getPrincipal())
+                    .thenReturn(user);
+
+            when(availabilityDAO.getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            )).thenReturn(List.of(availability));
+
+            // Act
+            List<AvailabilityResponseDTO> result =
+                    availabilityService.getPreviousAvailabilities(
+                            null, authentication
+                    );
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(10L, result.getFirst().id());
+            assertEquals(
+                    LocalDate.of(2026, 11, 30),
+                    result.getFirst().availableDate()
+            );
+            verifyNoInteractions(userDAO);
+            verify(availabilityDAO).getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            );
+            verify(availabilityDAO, never())
+                    .getUpcomingAvailabilities(
+                            anyLong(), any(), any()
+                    );
+        }
+
+        @Test
+        void getPreviousAvailabilities_AuthenticatedPetBusiness_ReturnsPastAvailabilities() {
+            // Arrange
+            user = new PetBusiness();
+            user.setId(1L);
+            user.setTimezone(TEST_TIMEZONE);
+
+            availability.setServiceProvider(user);
+            availability.setAvailableDate(LocalDate.of(2026, 11, 30));
+
+            Authentication authentication = mock(Authentication.class);
+            when(authentication.getPrincipal())
+                    .thenReturn(user);
+
+            when(availabilityDAO.getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            )).thenReturn(List.of(availability));
+
+            // Act
+            List<AvailabilityResponseDTO> result =
+                    availabilityService.getPreviousAvailabilities(
+                            null, authentication
+                    );
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(10L, result.getFirst().id());
+            verifyNoInteractions(userDAO);
+            verify(availabilityDAO).getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            );
+        }
+
+        @Test
+        void getPreviousAvailabilities_AuthenticatedPetOwner_ThrowsInvalidUserRoleException() {
+            // Arrange
+            user = new PetOwner();
+            user.setId(1L);
+            user.setTimezone(TEST_TIMEZONE);
+
+            Authentication authentication = mock(Authentication.class);
+            when(authentication.getPrincipal())
+                    .thenReturn(user);
+
+            // Act & Assert
+            assertThrows(
+                    InvalidUserRoleException.class,
+                    () -> availabilityService.getPreviousAvailabilities(
+                            null, authentication
+                    )
+            );
+            verifyNoInteractions(userDAO, availabilityDAO);
+        }
+
+        @Test
+        void getPreviousAvailabilities_PublicRequest_ExistingProvider_ReturnsPastAvailabilities() {
+            // Arrange
+            availability.setAvailableDate(LocalDate.of(2026, 11, 30));
+
+            when(userDAO.getUserById(1L))
+                    .thenReturn(Optional.of(user));
+
+            when(availabilityDAO.getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            )).thenReturn(List.of(availability));
+
+            // Act
+            List<AvailabilityResponseDTO> result =
+                    availabilityService.getPreviousAvailabilities(1L, null);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals(10L, result.getFirst().id());
+            verify(userDAO).getUserById(1L);
+            verify(availabilityDAO).getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            );
+        }
+
+        @Test
+        void getPreviousAvailabilities_PublicRequest_UserNotFound_ThrowsException() {
+            // Arrange
+            when(userDAO.getUserById(1L))
+                    .thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertThrows(
+                    UserNotFoundException.class,
+                    () -> availabilityService.getPreviousAvailabilities(1L, null)
+            );
+            verify(userDAO).getUserById(1L);
+            verifyNoInteractions(availabilityDAO);
+        }
+
+        @Test
+        void getPreviousAvailabilities_PublicRequest_PetOwner_ThrowsInvalidUserRoleException() {
+            // Arrange
+            user = new PetOwner();
+            user.setId(1L);
+            user.setTimezone(TEST_TIMEZONE);
+
+            when(userDAO.getUserById(1L))
+                    .thenReturn(Optional.of(user));
+
+            // Act & Assert
+            assertThrows(
+                    InvalidUserRoleException.class,
+                    () -> availabilityService.getPreviousAvailabilities(1L, null)
+            );
+            verify(userDAO).getUserById(1L);
+            verifyNoInteractions(availabilityDAO);
+        }
+
+        @Test
+        void getPreviousAvailabilities_NoPastAvailabilities_ReturnsEmptyList() {
+            // Arrange
+            Authentication authentication = mock(Authentication.class);
+            when(authentication.getPrincipal())
+                    .thenReturn(user);
+
+            when(availabilityDAO.getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            )).thenReturn(Collections.emptyList());
+
+            // Act
+            List<AvailabilityResponseDTO> result =
+                    availabilityService.getPreviousAvailabilities(
+                            null, authentication
+                    );
+
+            // Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+            verify(availabilityDAO).getPastAvailabilities(
+                    1L,
+                    LocalDate.of(2026, 12, 1),
+                    LocalTime.of(10, 0)
+            );
+        }
     }
 
     // Create Tests
