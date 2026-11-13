@@ -22,7 +22,7 @@ import static com.johnny.petscheduler.utils.TimeUtil.*;
  */
 public final class AvailabilityUtil
 {
-    private static final int MAX_AVAILABILITY_LIMIT_DAYS = 90;
+    public static final int MAX_AVAILABILITY_LIMIT_DAYS = 90;
     private static final int MIN_AVAILABILITY_DURATION_HOURS = 3;
 
     private AvailabilityUtil(){}
@@ -86,6 +86,7 @@ public final class AvailabilityUtil
             availability.setAvailableDate(request.availableDate());
             availability.setStartTime(request.startTime());
             availability.setEndTime(request.endTime());
+            return;
         }
         throw new AccessDeniedException(ERROR_MESSAGE_ACCESS_DENIED);
     }

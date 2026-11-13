@@ -353,8 +353,8 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
      *      True if overlapping, False otherwise
      */
     @Override
-    public boolean isAvailabilityOverlapping(final Long userID,
-                                             final Long availabilityID,
+    public boolean isAvailabilityOverlapping(final Long availabilityID,
+                                             final Long userID,
                                              final LocalDate requestedDate,
                                              final LocalTime requestedStartTime,
                                              final LocalTime requestedEndTime)
