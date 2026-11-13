@@ -98,6 +98,15 @@ public class AvailabilityService
         throw new InvalidUserRoleException(ERROR_MESSAGE_USER_NOT_PROVIDER);
     }
 
+    /**
+     * Returns a list of past Availabilities owned by a
+     * PetSitter or PetBusiness based on the user's timezone.
+     *
+     * @param authentication
+     *      An Authentication object
+     *
+     * @return <code>A List of Availabilities</code>
+     */
     @Transactional(readOnly = true)
     public List<AvailabilityResponseDTO> getPreviousAvailabilities(final Long userID,
                                                                    final Authentication authentication)
@@ -185,7 +194,7 @@ public class AvailabilityService
                     .getAvailabilityByIdAndProviderId(availabilityID, user.getId())
                     .orElseThrow(() -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
 
-            // Constraint 2: Check if anything is changing b/w request and the availability
+            // Constraint 2: Check if anything has changed b/w request and the availability
             if(!AvailabilityUtil.hasChanged(availability, request)) {
                 return AvailabilityUtil.generateResponse(availability);
             }
@@ -260,18 +269,18 @@ public class AvailabilityService
                                                       final AvailabilityRequestDTO request,
                                                       Availability availability)
     {
-        if(!availabilityDAO.isAvailabilityOverlapping(
+        if(availabilityDAO.isAvailabilityOverlapping(
                 availability.getId(),
                 user.getId(),
                 request.availableDate(),
                 request.startTime(),
                 request.endTime()))
         {
-            availability.setAvailableDate(request.availableDate());
-            availability.setStartTime(request.startTime());
-            availability.setEndTime(request.endTime());
+            throw new AvailabilityOverlapException(ERROR_MESSAGE_UPDATE_AVAILABILITY_OVERLAP);
         }
-        throw new AvailabilityOverlapException(ERROR_MESSAGE_UPDATE_AVAILABILITY_OVERLAP);
+        availability.setAvailableDate(request.availableDate());
+        availability.setStartTime(request.startTime());
+        availability.setEndTime(request.endTime());
     }
 
     private Availability validateOverlapAndPersistAvailability(final User user,
