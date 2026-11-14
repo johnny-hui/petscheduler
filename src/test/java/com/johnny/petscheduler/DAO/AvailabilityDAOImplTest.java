@@ -14,13 +14,15 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(AvailabilityDAOImpl.class)
-class AvailabilityDAOImplTest {
-
+class AvailabilityDAOImplTest
+{
     @Autowired
     private AvailabilityDAOImpl availabilityDAO;
 
@@ -29,7 +31,6 @@ class AvailabilityDAOImplTest {
 
     private User sitter;
     private User otherSitter;
-
     private static final LocalDate TODAY =
             LocalDate.of(2026, 11, 13);
 
@@ -74,6 +75,122 @@ class AvailabilityDAOImplTest {
         assertThat(persisted.getEndTime())
                 .isEqualTo(LocalTime.of(12, 0));
     }
+
+    @Test
+    void getAvailabilityById_shouldReturnAvailabilityWhenExists()
+    {
+        // Arrange
+        Availability availability = persistAvailability(
+                (PetSitter) sitter,
+                TODAY.plusDays(1),
+                LocalTime.of(9, 0),
+                LocalTime.of(12, 0)
+        );
+
+        Long availabilityID = availability.getId();
+        flushAndClear();
+
+        // Act
+        Optional<Availability> result = availabilityDAO.getAvailabilityById(availabilityID);
+
+        // Assert
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(availabilityID);
+    }
+
+    /**
+     * This test ensures existence of Availability after persistence and ownership
+     */
+    @Test
+    void getAvailabilityByIdAndProviderId_shouldReturnMatchingAvailability() {
+        Availability availability = persistAvailability(
+                (PetSitter) sitter, TODAY.plusDays(1),
+                LocalTime.of(9, 0), LocalTime.of(12, 0));
+
+        flushAndClear();
+
+        Optional<Availability> result =
+                availabilityDAO.getAvailabilityByIdAndProviderId(
+                        availability.getId(),
+                        sitter.getId()
+                );
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(availability.getId());
+    }
+
+    @Test
+    void getAvailabilityByIdAndProviderId_shouldReturnEmptyForWrongProvider() {
+        Availability availability = persistAvailability(
+                (PetSitter) sitter, TODAY.plusDays(1),
+                LocalTime.of(9, 0), LocalTime.of(12, 0));
+
+        flushAndClear();
+
+        Optional<Availability> result =
+                availabilityDAO.getAvailabilityByIdAndProviderId(
+                        availability.getId(),
+                        otherSitter.getId()
+                );
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getAvailabilityByIdAndProviderId_shouldReturnEmptyWhenNotFound() {
+        Optional<Availability> result =
+                availabilityDAO.getAvailabilityByIdAndProviderId(
+                        Long.MAX_VALUE,
+                        sitter.getId()
+                );
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getAvailabilityById_shouldReturnEmptyWhenNotFound()
+    {
+        // Act
+        Optional<Availability> result = availabilityDAO.getAvailabilityById(Long.MAX_VALUE);
+
+        // Assert
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getAllAvailabilitiesByUserID_shouldReturnOnlyProvidersAvailabilitiesInIdOrder() {
+        // Arrange
+        Availability first = persistAvailability(
+                (PetSitter) sitter, TODAY.plusDays(1),
+                LocalTime.of(9, 0), LocalTime.of(12, 0));
+
+        persistAvailability(
+                (PetSitter) otherSitter, TODAY.plusDays(1),
+                LocalTime.of(13, 0), LocalTime.of(16, 0));
+
+        Availability second = persistAvailability(
+                (PetSitter) sitter, TODAY.plusDays(2),
+                LocalTime.of(13, 0), LocalTime.of(16, 0));
+
+        flushAndClear();
+
+        // Act
+        List<Availability> result =
+                availabilityDAO.getAllAvailabilitiesByUserID(sitter.getId());
+
+        // Assert
+        assertThat(result)
+                .extracting(Availability::getId)
+                .containsExactly(first.getId(), second.getId());
+    }
+
+    @Test
+    void getAllAvailabilitiesByUserID_shouldReturnEmptyWhenNoneExist()
+    {
+        List<Availability> result = availabilityDAO.getAllAvailabilitiesByUserID(sitter.getId());
+        assertThat(result.isEmpty()).isEqualTo(true);
+    }
+
 
     private Availability persistAvailability(final PetSitter provider,
                                              final LocalDate date,
