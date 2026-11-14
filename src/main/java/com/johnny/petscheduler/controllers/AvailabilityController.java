@@ -4,9 +4,8 @@ import com.johnny.petscheduler.DTO.availabilities.AvailabilityRequestDTO;
 import com.johnny.petscheduler.DTO.availabilities.AvailabilityResponseDTO;
 import com.johnny.petscheduler.services.AvailabilityService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -154,13 +153,29 @@ public class AvailabilityController
      */
     @GetMapping("/search")
     public ResponseEntity<List<AvailabilityResponseDTO>> searchAvailabilitiesByQuery(
-            @RequestParam final LocalDate date,
-            @RequestParam final LocalTime startTime,
-            @RequestParam final LocalTime endTime,
-            @RequestParam(defaultValue = "0") final int page,
-            @RequestParam(defaultValue = "20") final int size,
-            final Authentication authentication)
-    {
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            final LocalDate date,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+            final LocalTime startTime,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
+            final LocalTime endTime,
+
+            @RequestParam(defaultValue = "0")
+            @PositiveOrZero
+            final int page,
+
+            @RequestParam(defaultValue = "20")
+            @Min(1)
+            @Max(100)
+            final int size,
+
+            final Authentication authentication
+    ) {
         List<AvailabilityResponseDTO> availabilities = availabilityService
                 .getAvailabilitiesByQuery(
                         date, startTime, endTime,

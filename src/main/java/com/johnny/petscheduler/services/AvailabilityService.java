@@ -231,7 +231,9 @@ public class AvailabilityService
             // 1. Verify the existence of the Availability and ownership
             Availability availability = availabilityDAO
                     .getAvailabilityByIdAndProviderId(availabilityID, user.getId())
-                    .orElseThrow(() -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND));
+                    .orElseThrow(
+                            () -> new AvailabilityNotFoundException(ERROR_MESSAGE_AVAILABILITY_NOT_FOUND)
+                    );
 
             // 2. Check for active bookings in the availability window
             if(!bookingDAO.anyActiveBookings(
@@ -241,7 +243,7 @@ public class AvailabilityService
                     availability.getEndTime()))
             {
                 availabilityDAO.delete(availability);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.noContent().build();
             }
             throw new AvailabilityBookingConflictException(
                     ERROR_MESSAGE_DELETE_AVAILABILITY_BOOKING_CONFLICT
