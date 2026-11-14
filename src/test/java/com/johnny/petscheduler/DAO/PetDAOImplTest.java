@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static com.johnny.petscheduler.security.user.UserRole.PET_OWNER;
 import static com.johnny.petscheduler.utils.PetTestUtil.createMockPetForDBTests;
-import static com.johnny.petscheduler.utils.UserTestUtil.createMockUser;
+import static com.johnny.petscheduler.utils.TestInitUtil.createMockUser;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest

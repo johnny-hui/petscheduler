@@ -3,9 +3,12 @@ package com.johnny.petscheduler.utils;
 import com.johnny.petscheduler.entities.users.*;
 import com.johnny.petscheduler.security.user.UserRole;
 
-public class UserTestUtil
+/**
+ * Contains helper methods that help facilitate initialization of different tests.
+ */
+public class TestInitUtil
 {
-    private UserTestUtil() {}
+    private TestInitUtil() {}
 
     public static User createMockUser(final UserRole role)
     {
