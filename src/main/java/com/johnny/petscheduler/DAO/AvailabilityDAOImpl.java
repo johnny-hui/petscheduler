@@ -152,7 +152,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
                 """
                 SELECT a
                 FROM Availability a
-                WHERE a.serviceProvider.id = : userID
+                WHERE a.serviceProvider.id = :userID
                   AND (
                       a.availableDate > :today
                       OR (
@@ -193,7 +193,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
                 """
                 SELECT a
                 FROM Availability a
-                WHERE a.serviceProvider.id = : userID
+                WHERE a.serviceProvider.id = :userID
                   AND (
                       a.availableDate < :today
                       OR (
@@ -247,7 +247,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
                 WHERE a.availableDate = :requestedDate
                   AND a.startTime <= :requestedStart
                   AND a.endTime >= :requestedEnd
-                ORDER BY a.startTime ASC
+                ORDER BY a.startTime ASC, a.id ASC
                 """,
                 Availability.class
         );
@@ -302,7 +302,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO
                  AND a.availableDate = :requestedDate
                  AND a.startTime <= :requestedStart
                  AND a.endTime >= :requestedEnd
-               ORDER BY a.startTime ASC
+               ORDER BY a.startTime ASC, a.id ASC
                """,
                 Availability.class
         );

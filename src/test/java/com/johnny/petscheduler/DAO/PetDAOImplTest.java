@@ -37,7 +37,7 @@ public class PetDAOImplTest
     void createPet_ShouldPersistPet()
     {
         // Arrange (create mock data with a User in DB first)
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
 
@@ -70,7 +70,7 @@ public class PetDAOImplTest
     void createPet_WithNoName_ShouldThrowDBConstraintViolationException()
     {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.setName(null);
@@ -88,7 +88,7 @@ public class PetDAOImplTest
     void createPet_WithNoOwner_ShouldThrowDBConstraintViolationException()
     {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.setOwner(null);
@@ -105,7 +105,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenBreedExceedLength_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.setBreed("***".repeat(1000));
@@ -122,7 +122,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenNullPetTypeInPetDetails_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.getDetails().setType(null);
@@ -139,7 +139,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenNullPetSizeInPetDetails_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.getDetails().setSize(null);
@@ -156,7 +156,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenNullPetGenderInPetDetails_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.getDetails().setGender(null);
@@ -173,7 +173,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenNullEnergyLevelInPetDetails_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.getDetails().setEnergyLevel(null);
@@ -190,7 +190,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenLengthExceededProfileDescInPetDetails_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.getDetails().setProfileDescription("***".repeat(1000));
@@ -207,7 +207,7 @@ public class PetDAOImplTest
     @Test
     void createPet_WhenLengthExceededExtraNotesInPetDetails_ShouldThrowDBConstraintViolationException() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         pet.getDetails().setExtraNotes("***".repeat(1000));
@@ -226,7 +226,7 @@ public class PetDAOImplTest
     void getPet_WhenPetExists_ShouldReturnPet()
     {
         // Arrange (Create a mock user and a pet in DB)
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet = createMockPetForDBTests(owner);
         petDAO.createPet(pet);
@@ -243,10 +243,8 @@ public class PetDAOImplTest
     void getPet_WhenPetNotOwnedByOwner_ShouldReturnEmptyOptional()
     {
         // Arrange (create two Pets owned by two different owners)
-        User owner1 = createMockUser(PET_OWNER);
-        owner1.setEmail("john123@abc.com");
-        User owner2 = createMockUser(PET_OWNER);
-        owner2.setEmail("joe123@abc.com");
+        User owner1 = createMockUser(PET_OWNER, "john1@outlook.com");
+        User owner2 = createMockUser(PET_OWNER, "joe123@abc.com");
         Pet pet1 = createMockPetForDBTests(owner1);
         Pet pet2 = createMockPetForDBTests(owner2);
 
@@ -266,7 +264,7 @@ public class PetDAOImplTest
     @Test
     void getAllPets_WhenPetExistsAndOwnedByUser_ShouldReturnAllPets() {
         // Arrange (create 1 user + 5 mock pets)
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         for(int i = 0; i < 5; i++) {
             Pet pet = createMockPetForDBTests(owner);
@@ -289,7 +287,7 @@ public class PetDAOImplTest
     @Test
     void getAllPets_WhenPetNotOwnedByUser_ShouldReturnEmptyList() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
 
         // Act
@@ -303,7 +301,7 @@ public class PetDAOImplTest
     @Test
     void getPet_WhenPetDoesNotExist_ShouldReturnEmptyOptional() {
         // Arrange (create 1 mock pet and user)
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
         Pet pet =  createMockPetForDBTests(owner);
         entityManager.persistAndFlush(pet);
@@ -319,7 +317,7 @@ public class PetDAOImplTest
     @Test
     void updatePet_ShouldUpdatePet() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         entityManager.persistAndFlush(owner);
 
         Pet pet = createMockPetForDBTests(owner);
@@ -345,7 +343,7 @@ public class PetDAOImplTest
     @Test
     void deletePet_ShouldDeletePet() {
         // Arrange
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         Pet pet = createMockPetForDBTests(owner);
         entityManager.persistAndFlush(owner);
         entityManager.persistAndFlush(pet);
@@ -364,7 +362,7 @@ public class PetDAOImplTest
     @Test
     void getPet_WhenAccessingPetTraits_ShouldHaveAccessToPetTraits() {
         // Arrange (pet has the below PetTraits)
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         Pet pet = createMockPetForDBTests(owner);
         entityManager.persistAndFlush(owner);
         entityManager.persistAndFlush(pet);
@@ -384,7 +382,7 @@ public class PetDAOImplTest
     @Test
     void getPet_WhenAccessingUser_ShouldHaveAccessToUser() {
         // Arrange (pet has the below PetTraits)
-        User owner = createMockUser(PET_OWNER);
+        User owner = createMockUser(PET_OWNER, "john1@outlook.com");
         Pet pet = createMockPetForDBTests(owner);
         entityManager.persistAndFlush(owner);
         entityManager.persistAndFlush(pet);
@@ -395,7 +393,7 @@ public class PetDAOImplTest
         User fetchedUser = result.getOwner();
 
         // Arrange
-        assertEquals("john_doe@abc.com", fetchedUser.getEmail());
+        assertEquals("john1@outlook.com", fetchedUser.getEmail());
         assertEquals("John", fetchedUser.getFirstName());
         assertEquals("Doe", fetchedUser.getLastName());
     }

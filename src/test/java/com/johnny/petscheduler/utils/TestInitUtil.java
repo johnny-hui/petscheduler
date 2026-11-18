@@ -10,7 +10,7 @@ public class TestInitUtil
 {
     private TestInitUtil() {}
 
-    public static User createMockUser(final UserRole role)
+    public static User createMockUser(final UserRole role, final String email)
     {
         User user = null;
 
@@ -38,14 +38,17 @@ public class TestInitUtil
             }
         }
 
-        assignBaseUserInfo(user, role);
+        assignBaseUserInfo(user, email, role);
         return user;
     }
 
-    private static void assignBaseUserInfo(final User user, final UserRole role) {
+    private static void assignBaseUserInfo(final User user,
+                                           final String email,
+                                           final UserRole role)
+    {
         user.setFirstName("John");
         user.setLastName("Doe");
-        user.setEmail("john_doe@abc.com");
+        user.setEmail(email);
         user.setPassword("password123");
         user.setCountry("US");
         user.setCity("Vancouver");
