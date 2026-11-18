@@ -1,6 +1,7 @@
 package com.johnny.petscheduler.exceptions.handlers;
 
 import com.johnny.petscheduler.exceptions.*;
+import com.johnny.petscheduler.exceptions.availability.*;
 import com.johnny.petscheduler.exceptions.generic.ErrorCode;
 import com.johnny.petscheduler.exceptions.generic.ErrorResponse;
 import com.johnny.petscheduler.utils.ValidationUtil;
@@ -13,9 +14,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.time.Instant;
@@ -33,6 +36,92 @@ import static com.johnny.petscheduler.security.configs.SecurityConstants.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler
 {
+    @ExceptionHandler(AvailabilityOverlapException.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityOverlapException(final AvailabilityOverlapException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ErrorCode.AVAILABILITY_CONFLICT,
+                ERROR_TITLE_AVAILABILITY_CONFLICT,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(AvailabilityBookingConflictException.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityBookingConflictException(
+            final AvailabilityBookingConflictException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ErrorCode.AVAILABILITY_BOOKING_CONFLICT,
+                ERROR_TITLE_UPDATE_AVAILABILITY_BOOKING_CONFLICT,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(InvalidUserRoleException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidUserRoleException(final InvalidUserRoleException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ErrorCode.INVALID_USER_ROLE,
+                ERROR_TITLE_INVALID_ROLE,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
+
+    @ExceptionHandler(AvailabilityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAvailabilityNotFoundException(final AvailabilityNotFoundException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ErrorCode.AVAILABILITY_NOT_FOUND,
+                ERROR_TITLE_AVAILABILITY_NOT_FOUND,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidAvailabilityDateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAvailabilityDateException(final InvalidAvailabilityDateException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ErrorCode.INVALID_AVAILABILITY,
+                ERROR_TITLE_INVALID_AVAILABILITY,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidAvailabilityTimeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAvailabilityTimeException(final InvalidAvailabilityTimeException ex)
+    {
+        ErrorResponse body = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ErrorCode.INVALID_AVAILABILITY,
+                ERROR_TITLE_INVALID_AVAILABILITY,
+                ex.getMessage(),
+                null,
+                Instant.now()
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidJWTException.class)
     public ResponseEntity<ErrorResponse> handleInvalidJWTException(final InvalidJWTException ex)
     {
@@ -304,6 +393,20 @@ public class GlobalExceptionHandler
                     Instant.now()
             );
             return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+        }
+
+        if(ex instanceof MissingServletRequestParameterException ||
+                ex instanceof MethodArgumentTypeMismatchException)
+        {
+            ErrorResponse body = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    ErrorCode.BAD_VALIDATION,
+                    ERROR_TITLE_BAD_VALIDATION,
+                    ex.getMessage(),
+                    null,
+                    Instant.now()
+            );
+            return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
         }
 
         // Handler for general exceptions

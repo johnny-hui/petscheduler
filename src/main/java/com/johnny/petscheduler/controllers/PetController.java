@@ -59,8 +59,7 @@ public class PetController
      */
     @PostMapping("/bulk")
     public ResponseEntity<Void> createPets(
-            @RequestBody
-            @Size(min = 1, max = MAX_PETS_PER_OWNER, message = "Between 1 and 10 Pets must be provided")
+            @RequestBody @Size(min = 1, max = MAX_PETS_PER_OWNER, message = "Between 1 and 10 Pets must be provided")
             List<@Valid PetRegistrationDTO> requests,
             final Authentication authentication)
     {

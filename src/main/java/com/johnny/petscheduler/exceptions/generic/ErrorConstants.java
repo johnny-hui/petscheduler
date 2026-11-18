@@ -20,6 +20,7 @@ public class ErrorConstants {
     public static final String ERROR_TITLE_PET_DELETE = "DELETE PET ERROR: ";
     public static final String ERROR_TITLE_PET_CREATE = "CREATE PET ERROR: ";
     public static final String ERROR_TITLE_USER_PROFILE_ERROR = "User Profile Error: ";
+    public static final String ERROR_TITLE_INVALID_ROLE = "Invalid User Role";
 
     public static final String ERROR_MESSAGE_BAD_VALIDATION = "One or more fields provided has failed validation.";
     public static final String ERROR_MESSAGE_USER_NOT_FOUND = "User with the provided email does not exist!";
@@ -28,11 +29,36 @@ public class ErrorConstants {
     public static final String ERROR_MESSAGE_INVALID_EST_YEAR = "An invalid business establishment year was provided";
     public static final String ERROR_MESSAGE_BAD_CREDENTIALS = "The provided username or password is incorrect";
     public static final String ERROR_MESSAGE_BAD_ACCOUNT_STATUS = "The account is locked, please contact admin for assistance";
-    public static final String ERROR_MESSAGE_ACCESS_DENIED = "You are not authorized to access this resource";
+    public static final String ERROR_MESSAGE_ACCESS_DENIED = "You are not authorized to access this resource!";
     public static final String ERROR_MESSAGE_PET_COUNT_EXCEEDED = "You have already reached max limit of pets registered";
     public static final String ERROR_MESSAGE_PET_FETCH = "The pet that was requested does not exist or you lack access to this resource";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_EMPTY = "No pets were provided.";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_PROVIDED = "You have provided more pets for registration than the max limit of pets allowed";
     public static final String ERROR_MESSAGE_PET_BULK_CREATE_LIMIT_EXCEEDED = "You cannot register more pets than the max limit of pets allowed";
-    public static final String ERROR_MESSAGE_USER_PROFILE_ERROR= "The requested user profile cannot be loaded at this time";
+    public static final String ERROR_MESSAGE_USER_PROFILE_ERROR = "The requested user profile cannot be loaded at this time";
+
+    // Availability Exceptions
+    public static final String ERROR_TITLE_AVAILABILITY_NOT_FOUND = "Availability Not Found";
+    public static final String ERROR_TITLE_AVAILABILITY_CONFLICT = "Availability Conflict Error (Overlap)";
+    public static final String ERROR_TITLE_INVALID_AVAILABILITY = "Invalid Availability Provided";
+    public static final String ERROR_TITLE_UPDATE_AVAILABILITY_BOOKING_CONFLICT = "Update Availability Conflict Error (Active Bookings)";
+    public static final String ERROR_TITLE_UPDATE_AVAILABILITY_OVERLAP_CONFLICT = "Update Availability Conflict Error (Overlap)";
+    public static final String ERROR_TITLE_DELETE_AVAILABILITY_BOOKING_CONFLICT = "Delete Availability Conflict Error (Active Bookings)";
+    public static final String ERROR_MESSAGE_EMPTY_AVAILABILITY = "No availabilities were provided.";
+    public static final String ERROR_MESSAGE_INVALID_AVAILABILITY_PAST = "Availability date cannot be in the past";
+    public static final String ERROR_MESSAGE_AVAILABILITY_INVALID_START = "One or more availabilities have a start time that is later than or equal to the end time.";
+    public static final String ERROR_MESSAGE_START_TIME_TODAY_NOT_IN_FUTURE = "The start time must be ahead of current time!";
+    public static final String ERROR_MESSAGE_AVAILABILITY_PAST_MAX = "The date selected for availability cannot exceed the maximum number of days allowed in advance: ";
+    public static final String ERROR_MESSAGE_AVAILABILITY_MIN_HOURS_NOT_MET = "The duration of your availability must be more than or equal to the following minimum amount of hours: ";
+    public static final String ERROR_MESSAGE_INVALID_START_TIME_INCREMENT = "Start time must be in 15 minute increments (e.g. 6:00, 6:15, 6:30, etc.)";
+    public static final String ERROR_MESSAGE_INVALID_END_TIME_INCREMENT = "End time must be in 15 minute increments (e.g. 6:00, 6:15, 6:30, etc.)";
+    public static final String ERROR_MESSAGE_AVAILABILITY_OVERLAP = "One or more requested availabilities are overlapping with an existing availability!";
+    public static final String ERROR_MESSAGE_MAX_BULK_AVAILABILITY_CREATE_LIMIT = "A maximum of 5 availabilities are allowed per bulk creation request";
+    public static final String ERROR_MESSAGE_AVAILABILITY_NOT_FOUND = "The requested availability does not exist!";
+    public static final String ERROR_MESSAGE_USER_NOT_PROVIDER = "The requested user is not a service provider! (e.g. pet sitter, pet business)";
+    public static final String ERROR_MESSAGE_QUERY_DATE_IN_PAST = "The provided query date cannot be in the past!";
+    public static final String ERROR_MESSAGE_QUERY_START_AFTER_END = "The provided query start time must be before end time!";
+    public static final String ERROR_MESSAGE_UPDATE_AVAILABILITY_BOOKING_CONFLICT = "Cannot update availability due to active bookings present (ACTIVE = Requested or Confirmed)";
+    public static final String ERROR_MESSAGE_UPDATE_AVAILABILITY_OVERLAP = "Cannot update availability due to overlapping availabilities!";
+    public static final String ERROR_MESSAGE_DELETE_AVAILABILITY_BOOKING_CONFLICT = "Cannot delete availability due to active bookings present (ACTIVE = Requested or Confirmed)";
 }

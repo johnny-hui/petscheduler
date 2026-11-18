@@ -12,10 +12,7 @@ import com.johnny.petscheduler.entities.users.PetBusiness;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.PetSitter;
 import com.johnny.petscheduler.entities.users.User;
-import com.johnny.petscheduler.exceptions.EmailAlreadyExistsException;
-import com.johnny.petscheduler.exceptions.EstablishmentYearInvalidException;
-import com.johnny.petscheduler.exceptions.MissingRefreshTokenException;
-import com.johnny.petscheduler.exceptions.RefreshTokenNotFoundException;
+import com.johnny.petscheduler.exceptions.*;
 import com.johnny.petscheduler.security.jwt.DAO.RefreshTokenDAO;
 import com.johnny.petscheduler.security.jwt.RefreshToken;
 import com.johnny.petscheduler.security.jwt.TokenPair;
@@ -41,8 +38,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.Locale;
 
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_EMAIL_ALREADY_EXISTS;
-import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.ERROR_MESSAGE_INVALID_EST_YEAR;
+import static com.johnny.petscheduler.exceptions.generic.ErrorConstants.*;
 import static com.johnny.petscheduler.security.configs.SecurityConstants.JWT_REFRESH_NOT_FOUND_MSG;
 
 /**
@@ -189,7 +185,11 @@ public class AuthenticationService
         // Check if token is refresh && validate hash from refresh token in DB
         if (claims != null && jwtUtil.isTokenRefresh(claims)) {
             String email = jwtUtil.getEmailFromToken(claims);
-            User user = userDAO.getUserByEmail(email);
+            User user = userDAO
+                    .getUserByEmail(email)
+                    .orElseThrow(
+                            () -> new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND)
+                    );
 
             RefreshToken refreshTokenFromDB = refreshTokenDAO
                     .getRefreshTokenByUserID(user.getId())
@@ -236,7 +236,11 @@ public class AuthenticationService
         // Delete refreshToken by User ID and create a delete HttpOnly Cookie
         if (claims != null && jwtUtil.isTokenRefresh(claims)) {
             String email = jwtUtil.getEmailFromToken(claims);
-            User user = userDAO.getUserByEmail(email);
+            User user = userDAO
+                    .getUserByEmail(email)
+                    .orElseThrow(
+                            () -> new UserNotFoundException(ERROR_MESSAGE_USER_NOT_FOUND)
+                    );
             refreshTokenDAO.deleteByUserID(user.getId());
 
             ResponseCookie clearCookie = CookieUtil.clearRefreshTokenCookie();
