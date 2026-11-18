@@ -1,5 +1,7 @@
 package com.johnny.petscheduler.entities.booking;
 
+import com.johnny.petscheduler.entities.PetBooking;
+import com.johnny.petscheduler.entities.service.ServiceOffering;
 import com.johnny.petscheduler.entities.users.PetOwner;
 import com.johnny.petscheduler.entities.users.User;
 import jakarta.persistence.*;
@@ -9,9 +11,12 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -40,9 +45,24 @@ public class Booking
     @JoinColumn(name = "provider_id", nullable = false)
     private User serviceProvider;
 
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "service_id", nullable = false)
-//    private ServiceOffering service;
+    @OneToMany(
+            mappedBy = "booking",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<PetBooking> bookingPets = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "service_id", nullable = false)
+    private ServiceOffering service;
+
+    @Column(
+            name = "total_price",
+            nullable = false,
+            precision = 10,
+            scale = 2
+    )
+    private BigDecimal totalPrice;
 
     @Column(name = "booking_date", nullable = false)
     private LocalDate bookingDate;
