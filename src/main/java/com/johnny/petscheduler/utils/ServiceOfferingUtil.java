@@ -21,7 +21,7 @@ public class ServiceOfferingUtil
             );
         }
 
-        if (!serviceType.supportsRate(serviceRate)) {
+        if (!serviceType.isValidRate(serviceRate)) {
             throw new InvalidServiceRateException(
                     "Service rate " + serviceRate + " is not supported for " + serviceType
             );

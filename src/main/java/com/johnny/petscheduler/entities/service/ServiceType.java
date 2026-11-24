@@ -13,7 +13,9 @@ public enum ServiceType
             ServiceRate.PER_SESSION
     ),
 
-    DOG_WALKING(ServiceRate.PER_WALK),
+    DOG_WALKING(
+            ServiceRate.PER_WALK
+    ),
 
     PET_SITTING(
             ServiceRate.PER_HOUR,
@@ -25,9 +27,13 @@ public enum ServiceType
             ServiceRate.PER_SESSION
     ),
 
-    DROP_IN_VISIT(ServiceRate.PER_SESSION),
+    DROP_IN_VISIT(
+            ServiceRate.PER_SESSION
+    ),
 
-    GROOM(ServiceRate.PER_SESSION);
+    GROOM(
+            ServiceRate.PER_SESSION
+    );
 
     private final Set<ServiceRate> allowedRates;
 
@@ -35,7 +41,7 @@ public enum ServiceType
         this.allowedRates = Set.copyOf(Arrays.asList(rates));
     }
 
-    public boolean supportsRate(final ServiceRate rate) {
+    public boolean isValidRate(final ServiceRate rate) {
         return allowedRates.contains(rate);
     }
 }

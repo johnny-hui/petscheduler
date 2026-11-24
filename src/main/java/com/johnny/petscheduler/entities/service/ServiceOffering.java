@@ -24,15 +24,15 @@ import java.time.Instant;
                 )
         }
 )
+@Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @Getter @Setter
-public class ServiceOffering
+public abstract class ServiceOffering
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Can be a PetSitter or PetBusiness
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "provider_id", nullable = false)
     private User serviceProvider;
@@ -40,10 +40,6 @@ public class ServiceOffering
     @Enumerated(EnumType.STRING)
     @Column(name = "service_type", nullable = false)
     private ServiceType serviceType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "service_rate", nullable = false)
-    private ServiceRate serviceRate;
 
     @NotNull
     @DecimalMin("0.01")
@@ -67,18 +63,6 @@ public class ServiceOffering
     )
     private BigDecimal additionalPricePerPet = BigDecimal.ZERO;
 
-    // For fixed-rate services only (PER_WALK, PER_SESSION)
-    @Column(name = "duration_minutes")
-    private Integer durationMinutes;
-
-    // For PER_HOUR services only
-    @Column(name = "min_duration_minutes")
-    private Integer minDurationMinutes;
-
-    // For PER_HOUR services only
-    @Column(name = "max_duration_minutes")
-    private Integer maxDurationMinutes;
-
     @Column(name = "description", length = 1000)
     private String description;
 
@@ -92,4 +76,37 @@ public class ServiceOffering
 
     @Version
     private Long version;
+
+    /**
+     * Determines the combined price of the ServiceOffering by
+     * adding the base price by the price per additional pet.
+     *
+     * @param petCount
+     *      An integer for the pet count
+     *
+     * @return <code>Combined Price</code>
+     *      The combined price (base price + [price per pet x (petCount - 1)])
+     */
+    protected BigDecimal calculateCombinedPrice(final int petCount)
+    {
+        if (petCount < 1) {
+            throw new IllegalArgumentException(
+                    "At least one pet is required."
+            );
+        }
+
+        return basePrice.add(
+                additionalPricePerPet.multiply(
+                        BigDecimal.valueOf(petCount - 1)
+                )
+        );
+    }
+
+    public abstract ServiceRate getServiceRate();
+
+    public abstract BigDecimal calculatePrice(
+            int petCount,
+            long requestedDurationMinutes
+    );
+
 }
