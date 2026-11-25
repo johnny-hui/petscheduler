@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalTime;
 
 @Entity
 @Table(
@@ -25,7 +27,7 @@ import java.time.Instant;
         }
 )
 @Inheritance(strategy = InheritanceType.JOINED)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter @Setter
 public abstract class ServiceOffering
 {
@@ -109,4 +111,8 @@ public abstract class ServiceOffering
             long requestedDurationMinutes
     );
 
+    public abstract LocalTime resolveEndTime(
+            final LocalTime startTime,
+            final LocalTime endTime
+    );
 }

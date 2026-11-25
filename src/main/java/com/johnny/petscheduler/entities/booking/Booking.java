@@ -54,7 +54,7 @@ public class Booking
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "service_id", nullable = false)
-    private ServiceOffering service;  // => either of type flexible or fixed-rate
+    private ServiceOffering service;  // => either of type (flexible or fixed-rate)
 
     @Column(
             name = "total_price",

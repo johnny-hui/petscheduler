@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "fixed_rate_service_offering")
@@ -51,21 +52,44 @@ public class FixedRateServiceOffering extends ServiceOffering
      * @param petCount
      *      An integer for the number of pets
      *
-     * @param requestedDurationMinutes
-     *      A long for the requested duration in minutes
+     * @param durationMinutes
+     *      A long for the duration in minutes (not used)
      *
      * @return <code>Total Price</code>
      *      The total price of the ServiceOffering
      */
     @Override
-    public BigDecimal calculatePrice(final int petCount, final long requestedDurationMinutes)
+    public BigDecimal calculatePrice(final int petCount,
+                                     final long durationMinutes)
     {
-        if (requestedDurationMinutes != this.durationMinutes) {
-            throw new IllegalArgumentException(
-                    "Invalid fixed service duration."
-            );
-        }
         return this.calculateCombinedPrice(petCount)
                 .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Creates and returns a new endTime for a Booking object from
+     * the FixedRateServiceOffering's duration.
+     *
+     * @param startTime
+     *      A LocalTime object
+     *
+     * @param requestedEndTime
+     *      A LocalTime object (not used)
+     *
+     * @return <code>endTime</code>
+     *      The calculated and set endTime
+     */
+    @Override
+    public LocalTime resolveEndTime(final LocalTime startTime,
+                                    final LocalTime requestedEndTime)
+    {
+        // Create and set a new endTime for the Booking
+        LocalTime endTime = startTime.plusMinutes(durationMinutes);
+
+        // Prevent midnight rollover
+        if (!endTime.isAfter(startTime)) {
+            throw new IllegalArgumentException("Overnight bookings are not supported.");
+        }
+        return endTime;
     }
 }

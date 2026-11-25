@@ -12,6 +12,8 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "flexible_rate_service_offering")
@@ -51,14 +53,7 @@ public class FlexibleRateServiceOffering extends ServiceOffering
     @Override
     public BigDecimal calculatePrice(final int petCount, final long requestedDurationMinutes)
     {
-        if (requestedDurationMinutes < minDurationMinutes
-                || requestedDurationMinutes > maxDurationMinutes)
-        {
-            throw new IllegalArgumentException(
-                    "Duration is outside the permitted range."
-            );
-        }
-
+        validateBookingDuration(requestedDurationMinutes);
         return this.calculateCombinedPrice(petCount)
                 .multiply(BigDecimal.valueOf(requestedDurationMinutes))
                 .divide(
@@ -66,5 +61,62 @@ public class FlexibleRateServiceOffering extends ServiceOffering
                         2,
                         RoundingMode.HALF_UP
                 );
+    }
+
+    /**
+     * Validates and determines the endTime for a FlexibleRateServiceOffering (per-hour)
+     * based on the duration of the Booking (requestedStartTime && requestedEndTime)
+     *
+     * @param requestedStartTime
+     *      A LocalTime object
+     *
+     * @param requestedEndTime
+     *      A LocalTime object (not used)
+     *
+     * @return <code>endTime</code>
+     *      The validated endTime
+     */
+    @Override
+    public LocalTime resolveEndTime(final LocalTime requestedStartTime,
+                                    final LocalTime requestedEndTime)
+    {
+        if (requestedEndTime == null) {
+            throw new IllegalArgumentException(
+                    "An end time is required for flexible-rate services."
+            );
+        }
+
+        if (!requestedStartTime.isBefore(requestedEndTime)) {
+            throw new IllegalArgumentException(
+                    "Start time must be before end time."
+            );
+        }
+
+        long durationMinutes = Duration
+                .between(requestedStartTime, requestedEndTime)
+                .toMinutes();
+
+        validateBookingDuration(durationMinutes);
+        return requestedEndTime;
+    }
+
+    /**
+     * Validates and checks whether a Booking's duration is valid for a
+     * FlexibleRateServiceOffering.
+     *
+     * @param requestedDurationMinutes
+     *      A Long for the requested duration (in minutes)
+     */
+    public void validateBookingDuration(final long requestedDurationMinutes)
+    {
+        if (requestedDurationMinutes <= 0 ||
+                requestedDurationMinutes % 15 != 0 ||
+                requestedDurationMinutes < minDurationMinutes ||
+                requestedDurationMinutes > maxDurationMinutes)
+        {
+            throw new IllegalArgumentException(
+                    "Booking duration is outside the permitted range."
+            );
+        }
     }
 }

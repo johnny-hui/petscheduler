@@ -42,6 +42,6 @@ public enum ServiceType
     }
 
     public boolean isValidRate(final ServiceRate rate) {
-        return allowedRates.contains(rate);
+        return rate != null && allowedRates.contains(rate);
     }
 }
